@@ -228,6 +228,9 @@ dependencies = [
 	{org = "ballerina", name = "lang.value"},
 	{org = "ballerina", name = "observe"}
 ]
+modules = [
+	{org = "ballerina", packageName = "log", moduleName = "log"}
+]
 
 [[package]]
 org = "ballerina"
@@ -404,6 +407,7 @@ dependencies = [
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "log"},
 	{org = "ballerina", name = "persist"},
 	{org = "ballerina", name = "regex"},
 	{org = "ballerina", name = "sql"},
@@ -417,6 +421,7 @@ modules = [
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db_scripts"},
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.search"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.users"}
 ]
 

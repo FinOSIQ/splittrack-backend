@@ -5,13 +5,15 @@ import splittrack_backend.users;
 
 import ballerina/http;
 import ballerina/io;
+import splittrack_backend.search;
 
 listener http:Listener httpListener = new (9090);
 
 public function main() returns error? {
 
-    check executeSqlScript();
+    // check executeSqlScript();
     check httpListener.attach(users:getUserService(), "/users");
+    check httpListener.attach(search:getSearchService(), "/search");
 
     check httpListener.start();
 }
