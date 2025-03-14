@@ -4,33 +4,34 @@
 // It should not be modified by hand.
 
 public type User record {|
-    readonly int userid;
+    readonly string user_Id;
     string email;
-    string password;
-    string name;
-    string user_role;
-    string user_type;
-    string phone_no;
+    string first_name;
+    string last_name;
+    string phone_number;
+    string birthdate;
     string currency_pref;
 
 |};
 
 public type UserOptionalized record {|
-    int userid?;
+    string user_Id?;
     string email?;
-    string password?;
-    string name?;
-    string user_role?;
-    string user_type?;
-    string phone_no?;
+    string first_name?;
+    string last_name?;
+    string phone_number?;
+    string birthdate?;
     string currency_pref?;
 |};
 
 public type UserWithRelations record {|
     *UserOptionalized;
-    FriendOptionalized[] friends?;
+    FriendRequestOptionalized[] friendRequests?;
     UserGroupMemberOptionalized[] groupMembers?;
     ExpenseParticipantOptionalized[] expenseParticipants?;
+    TransactionOptionalized[] transactions?;
+    FriendOptionalized[] friends?;
+    FriendOptionalized[] friend?;
 |};
 
 public type UserTargetType typedesc<UserWithRelations>;
@@ -39,27 +40,58 @@ public type UserInsert User;
 
 public type UserUpdate record {|
     string email?;
-    string password?;
-    string name?;
-    string user_role?;
-    string user_type?;
-    string phone_no?;
+    string first_name?;
+    string last_name?;
+    string phone_number?;
+    string birthdate?;
     string currency_pref?;
 |};
 
+public type FriendRequest record {|
+    readonly int friend_Id;
+    string send_user_idUser_Id;
+    int receive_user_Id;
+    string status;
+|};
+
+public type FriendRequestOptionalized record {|
+    int friend_Id?;
+    string send_user_idUser_Id?;
+    int receive_user_Id?;
+    string status?;
+|};
+
+public type FriendRequestWithRelations record {|
+    *FriendRequestOptionalized;
+    UserOptionalized send_user_Id?;
+|};
+
+public type FriendRequestTargetType typedesc<FriendRequestWithRelations>;
+
+public type FriendRequestInsert FriendRequest;
+
+public type FriendRequestUpdate record {|
+    string send_user_idUser_Id?;
+    int receive_user_Id?;
+    string status?;
+|};
+
 public type Friend record {|
-    readonly int friendId;
-    int userUserid;
+    readonly int friend_Id;
+    string user_id_1User_Id;
+    string user_id_2User_Id;
 |};
 
 public type FriendOptionalized record {|
-    int friendId?;
-    int userUserid?;
+    int friend_Id?;
+    string user_id_1User_Id?;
+    string user_id_2User_Id?;
 |};
 
 public type FriendWithRelations record {|
     *FriendOptionalized;
-    UserOptionalized user?;
+    UserOptionalized user_Id_1?;
+    UserOptionalized user_Id_2?;
 |};
 
 public type FriendTargetType typedesc<FriendWithRelations>;
@@ -67,23 +99,25 @@ public type FriendTargetType typedesc<FriendWithRelations>;
 public type FriendInsert Friend;
 
 public type FriendUpdate record {|
-    int userUserid?;
+    string user_id_1User_Id?;
+    string user_id_2User_Id?;
 |};
 
 public type UserGroup record {|
-    readonly int groupId;
+    readonly int group_Id;
     string name;
 
 |};
 
 public type UserGroupOptionalized record {|
-    int groupId?;
+    int group_Id?;
     string name?;
 |};
 
 public type UserGroupWithRelations record {|
     *UserGroupOptionalized;
     UserGroupMemberOptionalized[] groupMembers?;
+    ExpenseOptionalized[] expenses?;
 |};
 
 public type UserGroupTargetType typedesc<UserGroupWithRelations>;
@@ -95,17 +129,17 @@ public type UserGroupUpdate record {|
 |};
 
 public type UserGroupMember record {|
-    readonly int g_memberId;
+    readonly int group_member_Id;
     string member_role;
-    int groupGroupId;
-    int userUserid;
+    int groupGroup_Id;
+    string userUser_Id;
 |};
 
 public type UserGroupMemberOptionalized record {|
-    int g_memberId?;
+    int group_member_Id?;
     string member_role?;
-    int groupGroupId?;
-    int userUserid?;
+    int groupGroup_Id?;
+    string userUser_Id?;
 |};
 
 public type UserGroupMemberWithRelations record {|
@@ -120,29 +154,30 @@ public type UserGroupMemberInsert UserGroupMember;
 
 public type UserGroupMemberUpdate record {|
     string member_role?;
-    int groupGroupId?;
-    int userUserid?;
+    int groupGroup_Id?;
+    string userUser_Id?;
 |};
 
 public type Expense record {|
-    readonly int expenseId;
+    readonly int expense_Id;
     string name;
-    decimal owing_amount;
+    decimal total_amount;
 
-    int txnTransactionId;
+    int usergroupGroup_Id;
 |};
 
 public type ExpenseOptionalized record {|
-    int expenseId?;
+    int expense_Id?;
     string name?;
-    decimal owing_amount?;
-    int txnTransactionId?;
+    decimal total_amount?;
+    int usergroupGroup_Id?;
 |};
 
 public type ExpenseWithRelations record {|
     *ExpenseOptionalized;
     ExpenseParticipantOptionalized[] expenseParticipants?;
-    TransactionOptionalized txn?;
+    TransactionOptionalized[] transactions?;
+    UserGroupOptionalized usergroup?;
 |};
 
 public type ExpenseTargetType typedesc<ExpenseWithRelations>;
@@ -151,22 +186,24 @@ public type ExpenseInsert Expense;
 
 public type ExpenseUpdate record {|
     string name?;
-    decimal owing_amount?;
-    int txnTransactionId?;
+    decimal total_amount?;
+    int usergroupGroup_Id?;
 |};
 
 public type ExpenseParticipant record {|
-    readonly int participantId;
+    readonly int participant_Id;
     string participant_role;
-    int expenseExpenseId;
-    int userUserid;
+    decimal owning_amount;
+    int expenseExpense_Id;
+    string userUser_Id;
 |};
 
 public type ExpenseParticipantOptionalized record {|
-    int participantId?;
+    int participant_Id?;
     string participant_role?;
-    int expenseExpenseId?;
-    int userUserid?;
+    decimal owning_amount?;
+    int expenseExpense_Id?;
+    string userUser_Id?;
 |};
 
 public type ExpenseParticipantWithRelations record {|
@@ -181,23 +218,29 @@ public type ExpenseParticipantInsert ExpenseParticipant;
 
 public type ExpenseParticipantUpdate record {|
     string participant_role?;
-    int expenseExpenseId?;
-    int userUserid?;
+    decimal owning_amount?;
+    int expenseExpense_Id?;
+    string userUser_Id?;
 |};
 
 public type Transaction record {|
-    readonly int transactionId;
-
+    readonly int transaction_Id;
+    decimal payed_amount;
+    int expenseExpense_Id;
+    string payee_idUser_Id;
 |};
 
 public type TransactionOptionalized record {|
-    int transactionId?;
+    int transaction_Id?;
+    decimal payed_amount?;
+    int expenseExpense_Id?;
+    string payee_idUser_Id?;
 |};
 
 public type TransactionWithRelations record {|
     *TransactionOptionalized;
-    SettlementOptionalized[] settlements?;
-    ExpenseOptionalized[] expenses?;
+    ExpenseOptionalized expense?;
+    UserOptionalized payee_Id?;
 |};
 
 public type TransactionTargetType typedesc<TransactionWithRelations>;
@@ -205,36 +248,13 @@ public type TransactionTargetType typedesc<TransactionWithRelations>;
 public type TransactionInsert Transaction;
 
 public type TransactionUpdate record {|
-|};
-
-public type Settlement record {|
-    readonly int settlementId;
-    decimal settled_amount;
-    int txnTransactionId;
-|};
-
-public type SettlementOptionalized record {|
-    int settlementId?;
-    decimal settled_amount?;
-    int txnTransactionId?;
-|};
-
-public type SettlementWithRelations record {|
-    *SettlementOptionalized;
-    TransactionOptionalized txn?;
-|};
-
-public type SettlementTargetType typedesc<SettlementWithRelations>;
-
-public type SettlementInsert Settlement;
-
-public type SettlementUpdate record {|
-    decimal settled_amount?;
-    int txnTransactionId?;
+    decimal payed_amount?;
+    int expenseExpense_Id?;
+    string payee_idUser_Id?;
 |};
 
 public type BankAccount record {|
-    readonly int accountId;
+    readonly int account_Id;
     string account_no;
     string bank;
     string branch;
@@ -242,7 +262,7 @@ public type BankAccount record {|
 |};
 
 public type BankAccountOptionalized record {|
-    int accountId?;
+    int account_Id?;
     string account_no?;
     string bank?;
     string branch?;
@@ -264,21 +284,21 @@ public type BankAccountUpdate record {|
 |};
 
 public type Card record {|
-    readonly int cardId;
+    readonly int card_Id;
     string card_no;
     string card_name;
     string card_expiry;
     string card_cv;
-    int bankaccountAccountId;
+    int bankaccountAccount_Id;
 |};
 
 public type CardOptionalized record {|
-    int cardId?;
+    int card_Id?;
     string card_no?;
     string card_name?;
     string card_expiry?;
     string card_cv?;
-    int bankaccountAccountId?;
+    int bankaccountAccount_Id?;
 |};
 
 public type CardWithRelations record {|
@@ -295,6 +315,6 @@ public type CardUpdate record {|
     string card_name?;
     string card_expiry?;
     string card_cv?;
-    int bankaccountAccountId?;
+    int bankaccountAccount_Id?;
 |};
 

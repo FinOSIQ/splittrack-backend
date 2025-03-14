@@ -1,85 +1,83 @@
 import ballerina/persist as _;
 
-// User entity (1-to-M with Friend, GroupMember, ExpenseParticipant)
 public type User record {|
-    readonly int userid;
+    readonly string user_Id;
     string email;
-    string password;
-    string name;
-    string user_role;
-    string user_type;
-    string phone_no;
+    string first_name;
+    string last_name;
+    string phone_number;
+    string birthdate;
     string currency_pref;
-    // 1-to-M relationships
-    Friend[] friends;
+    FriendRequest[] friendRequests;
     UserGroupMember[] groupMembers;
     ExpenseParticipant[] expenseParticipants;
+    Transaction[] transactions;
+    Friend[] friends;
+	Friend[] friend;
 |};
 
-// Friend entity (M-to-1 with User)
+public type FriendRequest record {|
+    readonly int friend_Id;
+    User send_user_Id;
+    int receive_user_Id;
+    string status;
+|};
+
 public type Friend record {|
-    readonly int friendId;
-    User user;
+    readonly int friend_Id;
+    User user_Id_1;
+    User user_Id_2;
 |};
 
-// Group entity (1-to-M with GroupMember)
 public type UserGroup record {|
-    readonly int groupId;
+    readonly int group_Id;
     string name;
     UserGroupMember[] groupMembers;
+    Expense[] expenses;
 |};
 
-// GroupMember entity (M-to-1 with Group, M-to-1 with User)
 public type UserGroupMember record {|
-    readonly int g_memberId;
+    readonly int group_member_Id;
     string member_role;
     UserGroup group;
     User user;
 |};
 
-// Expense entity (M-to-1 with Transaction)
 public type Expense record {|
-    readonly int expenseId;
+    readonly int expense_Id;
     string name;
-    decimal owing_amount;
+    decimal total_amount;
     ExpenseParticipant[] expenseParticipants;
-    Transaction txn; // Reference to Transaction
+    Transaction[] transactions;
+	UserGroup usergroup;
 |};
 
-// ExpenseParticipant entity (M-to-1 with Expense, M-to-1 with User)
 public type ExpenseParticipant record {|
-    readonly int participantId;
+    readonly int participant_Id;
     string participant_role;
+    decimal owning_amount;
     Expense expense;
     User user;
 |};
 
-// Transaction entity (1-to-M with Settlement, 1-to-M with Expense)
 public type Transaction record {|
-    readonly int transactionId;
-    Settlement[] settlements;
-    Expense[] expenses; // Added to complete the 1-to-M relationship with Expense
+    readonly int transaction_Id;
+    decimal payed_amount;
+	Expense expense;
+	User payee_Id;
 |};
 
-// Settlement entity (M-to-1 with Transaction)
-public type Settlement record {|
-    readonly int settlementId;
-    decimal settled_amount;
-    Transaction txn; // Reference to Transaction
-|};
 
-// BankAccount entity (1-to-M with Card)
 public type BankAccount record {|
-    readonly int accountId;
+    readonly int account_Id;
     string account_no;
     string bank;
     string branch;
     Card[] cards;
 |};
 
-// Card entity (M-to-1 with BankAccount)
 public type Card record {|
-    readonly int cardId;
+    readonly int card_Id;
     string card_no;
     string card_name;
     string card_expiry;

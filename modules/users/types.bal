@@ -1,3 +1,3 @@
-public type CustomerRequest record {|
-    string name; // Required field
+public type CreateUserRequest record {|
+    string token; // Required field
 |};

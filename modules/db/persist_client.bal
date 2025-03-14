@@ -11,13 +11,13 @@ import ballerinax/mysql.driver as _;
 import ballerinax/persist.sql as psql;
 
 const USER = "users";
+const FRIEND_REQUEST = "friendrequests";
 const FRIEND = "friends";
 const USER_GROUP = "usergroups";
 const USER_GROUP_MEMBER = "usergroupmembers";
 const EXPENSE = "expenses";
 const EXPENSE_PARTICIPANT = "expenseparticipants";
 const TRANSACTION = "transactions";
-const SETTLEMENT = "settlements";
 const BANK_ACCOUNT = "bankaccounts";
 const CARD = "cards";
 
@@ -33,202 +33,254 @@ public isolated client class Client {
             entityName: "User",
             tableName: "User",
             fieldMetadata: {
-                userid: {columnName: "userid"},
+                user_Id: {columnName: "user_Id"},
                 email: {columnName: "email"},
-                password: {columnName: "password"},
-                name: {columnName: "name"},
-                user_role: {columnName: "user_role"},
-                user_type: {columnName: "user_type"},
-                phone_no: {columnName: "phone_no"},
+                first_name: {columnName: "first_name"},
+                last_name: {columnName: "last_name"},
+                phone_number: {columnName: "phone_number"},
+                birthdate: {columnName: "birthdate"},
                 currency_pref: {columnName: "currency_pref"},
-                "friends[].friendId": {relation: {entityName: "friends", refField: "friendId"}},
-                "friends[].userUserid": {relation: {entityName: "friends", refField: "userUserid"}},
-                "groupMembers[].g_memberId": {relation: {entityName: "groupMembers", refField: "g_memberId"}},
+                "friendRequests[].friend_Id": {relation: {entityName: "friendRequests", refField: "friend_Id"}},
+                "friendRequests[].send_user_idUser_Id": {relation: {entityName: "friendRequests", refField: "send_user_idUser_Id"}},
+                "friendRequests[].receive_user_Id": {relation: {entityName: "friendRequests", refField: "receive_user_Id"}},
+                "friendRequests[].status": {relation: {entityName: "friendRequests", refField: "status"}},
+                "groupMembers[].group_member_Id": {relation: {entityName: "groupMembers", refField: "group_member_Id"}},
                 "groupMembers[].member_role": {relation: {entityName: "groupMembers", refField: "member_role"}},
-                "groupMembers[].groupGroupId": {relation: {entityName: "groupMembers", refField: "groupGroupId"}},
-                "groupMembers[].userUserid": {relation: {entityName: "groupMembers", refField: "userUserid"}},
-                "expenseParticipants[].participantId": {relation: {entityName: "expenseParticipants", refField: "participantId"}},
+                "groupMembers[].groupGroup_Id": {relation: {entityName: "groupMembers", refField: "groupGroup_Id"}},
+                "groupMembers[].userUser_Id": {relation: {entityName: "groupMembers", refField: "userUser_Id"}},
+                "expenseParticipants[].participant_Id": {relation: {entityName: "expenseParticipants", refField: "participant_Id"}},
                 "expenseParticipants[].participant_role": {relation: {entityName: "expenseParticipants", refField: "participant_role"}},
-                "expenseParticipants[].expenseExpenseId": {relation: {entityName: "expenseParticipants", refField: "expenseExpenseId"}},
-                "expenseParticipants[].userUserid": {relation: {entityName: "expenseParticipants", refField: "userUserid"}}
+                "expenseParticipants[].owning_amount": {relation: {entityName: "expenseParticipants", refField: "owning_amount"}},
+                "expenseParticipants[].expenseExpense_Id": {relation: {entityName: "expenseParticipants", refField: "expenseExpense_Id"}},
+                "expenseParticipants[].userUser_Id": {relation: {entityName: "expenseParticipants", refField: "userUser_Id"}},
+                "transactions[].transaction_Id": {relation: {entityName: "transactions", refField: "transaction_Id"}},
+                "transactions[].payed_amount": {relation: {entityName: "transactions", refField: "payed_amount"}},
+                "transactions[].expenseExpense_Id": {relation: {entityName: "transactions", refField: "expenseExpense_Id"}},
+                "transactions[].payee_idUser_Id": {relation: {entityName: "transactions", refField: "payee_idUser_Id"}},
+                "friends[].friend_Id": {relation: {entityName: "friends", refField: "friend_Id"}},
+                "friends[].user_id_1User_Id": {relation: {entityName: "friends", refField: "user_id_1User_Id"}},
+                "friends[].user_id_2User_Id": {relation: {entityName: "friends", refField: "user_id_2User_Id"}},
+                "friend[].friend_Id": {relation: {entityName: "friend", refField: "friend_Id"}},
+                "friend[].user_id_1User_Id": {relation: {entityName: "friend", refField: "user_id_1User_Id"}},
+                "friend[].user_id_2User_Id": {relation: {entityName: "friend", refField: "user_id_2User_Id"}}
             },
-            keyFields: ["userid"],
+            keyFields: ["user_Id"],
             joinMetadata: {
-                friends: {entity: Friend, fieldName: "friends", refTable: "Friend", refColumns: ["userUserid"], joinColumns: ["userid"], 'type: psql:MANY_TO_ONE},
-                groupMembers: {entity: UserGroupMember, fieldName: "groupMembers", refTable: "UserGroupMember", refColumns: ["userUserid"], joinColumns: ["userid"], 'type: psql:MANY_TO_ONE},
-                expenseParticipants: {entity: ExpenseParticipant, fieldName: "expenseParticipants", refTable: "ExpenseParticipant", refColumns: ["userUserid"], joinColumns: ["userid"], 'type: psql:MANY_TO_ONE}
+                friendRequests: {entity: FriendRequest, fieldName: "friendRequests", refTable: "FriendRequest", refColumns: ["send_user_idUser_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE},
+                groupMembers: {entity: UserGroupMember, fieldName: "groupMembers", refTable: "UserGroupMember", refColumns: ["userUser_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE},
+                expenseParticipants: {entity: ExpenseParticipant, fieldName: "expenseParticipants", refTable: "ExpenseParticipant", refColumns: ["userUser_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE},
+                transactions: {entity: Transaction, fieldName: "transactions", refTable: "Transaction", refColumns: ["payee_idUser_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE},
+                friends: {entity: Friend, fieldName: "friends", refTable: "Friend", refColumns: ["user_id_1User_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE},
+                friend: {entity: Friend, fieldName: "friend", refTable: "Friend", refColumns: ["user_id_2User_Id"], joinColumns: ["user_Id"], 'type: psql:MANY_TO_ONE}
             }
+        },
+        [FRIEND_REQUEST]: {
+            entityName: "FriendRequest",
+            tableName: "FriendRequest",
+            fieldMetadata: {
+                friend_Id: {columnName: "friend_Id"},
+                send_user_idUser_Id: {columnName: "send_user_idUser_Id"},
+                receive_user_Id: {columnName: "receive_user_Id"},
+                status: {columnName: "status"},
+                "send_user_Id.user_Id": {relation: {entityName: "send_user_Id", refField: "user_Id"}},
+                "send_user_Id.email": {relation: {entityName: "send_user_Id", refField: "email"}},
+                "send_user_Id.first_name": {relation: {entityName: "send_user_Id", refField: "first_name"}},
+                "send_user_Id.last_name": {relation: {entityName: "send_user_Id", refField: "last_name"}},
+                "send_user_Id.phone_number": {relation: {entityName: "send_user_Id", refField: "phone_number"}},
+                "send_user_Id.birthdate": {relation: {entityName: "send_user_Id", refField: "birthdate"}},
+                "send_user_Id.currency_pref": {relation: {entityName: "send_user_Id", refField: "currency_pref"}}
+            },
+            keyFields: ["friend_Id"],
+            joinMetadata: {send_user_Id: {entity: User, fieldName: "send_user_Id", refTable: "User", refColumns: ["user_Id"], joinColumns: ["send_user_idUser_Id"], 'type: psql:ONE_TO_MANY}}
         },
         [FRIEND]: {
             entityName: "Friend",
             tableName: "Friend",
             fieldMetadata: {
-                friendId: {columnName: "friendId"},
-                userUserid: {columnName: "userUserid"},
-                "user.userid": {relation: {entityName: "user", refField: "userid"}},
-                "user.email": {relation: {entityName: "user", refField: "email"}},
-                "user.password": {relation: {entityName: "user", refField: "password"}},
-                "user.name": {relation: {entityName: "user", refField: "name"}},
-                "user.user_role": {relation: {entityName: "user", refField: "user_role"}},
-                "user.user_type": {relation: {entityName: "user", refField: "user_type"}},
-                "user.phone_no": {relation: {entityName: "user", refField: "phone_no"}},
-                "user.currency_pref": {relation: {entityName: "user", refField: "currency_pref"}}
+                friend_Id: {columnName: "friend_Id"},
+                user_id_1User_Id: {columnName: "user_id_1User_Id"},
+                user_id_2User_Id: {columnName: "user_id_2User_Id"},
+                "user_Id_1.user_Id": {relation: {entityName: "user_Id_1", refField: "user_Id"}},
+                "user_Id_1.email": {relation: {entityName: "user_Id_1", refField: "email"}},
+                "user_Id_1.first_name": {relation: {entityName: "user_Id_1", refField: "first_name"}},
+                "user_Id_1.last_name": {relation: {entityName: "user_Id_1", refField: "last_name"}},
+                "user_Id_1.phone_number": {relation: {entityName: "user_Id_1", refField: "phone_number"}},
+                "user_Id_1.birthdate": {relation: {entityName: "user_Id_1", refField: "birthdate"}},
+                "user_Id_1.currency_pref": {relation: {entityName: "user_Id_1", refField: "currency_pref"}},
+                "user_Id_2.user_Id": {relation: {entityName: "user_Id_2", refField: "user_Id"}},
+                "user_Id_2.email": {relation: {entityName: "user_Id_2", refField: "email"}},
+                "user_Id_2.first_name": {relation: {entityName: "user_Id_2", refField: "first_name"}},
+                "user_Id_2.last_name": {relation: {entityName: "user_Id_2", refField: "last_name"}},
+                "user_Id_2.phone_number": {relation: {entityName: "user_Id_2", refField: "phone_number"}},
+                "user_Id_2.birthdate": {relation: {entityName: "user_Id_2", refField: "birthdate"}},
+                "user_Id_2.currency_pref": {relation: {entityName: "user_Id_2", refField: "currency_pref"}}
             },
-            keyFields: ["friendId"],
-            joinMetadata: {user: {entity: User, fieldName: "user", refTable: "User", refColumns: ["userid"], joinColumns: ["userUserid"], 'type: psql:ONE_TO_MANY}}
+            keyFields: ["friend_Id"],
+            joinMetadata: {
+                user_Id_1: {entity: User, fieldName: "user_Id_1", refTable: "User", refColumns: ["user_Id"], joinColumns: ["user_id_1User_Id"], 'type: psql:ONE_TO_MANY},
+                user_Id_2: {entity: User, fieldName: "user_Id_2", refTable: "User", refColumns: ["user_Id"], joinColumns: ["user_id_2User_Id"], 'type: psql:ONE_TO_MANY}
+            }
         },
         [USER_GROUP]: {
             entityName: "UserGroup",
             tableName: "UserGroup",
             fieldMetadata: {
-                groupId: {columnName: "groupId"},
+                group_Id: {columnName: "group_Id"},
                 name: {columnName: "name"},
-                "groupMembers[].g_memberId": {relation: {entityName: "groupMembers", refField: "g_memberId"}},
+                "groupMembers[].group_member_Id": {relation: {entityName: "groupMembers", refField: "group_member_Id"}},
                 "groupMembers[].member_role": {relation: {entityName: "groupMembers", refField: "member_role"}},
-                "groupMembers[].groupGroupId": {relation: {entityName: "groupMembers", refField: "groupGroupId"}},
-                "groupMembers[].userUserid": {relation: {entityName: "groupMembers", refField: "userUserid"}}
+                "groupMembers[].groupGroup_Id": {relation: {entityName: "groupMembers", refField: "groupGroup_Id"}},
+                "groupMembers[].userUser_Id": {relation: {entityName: "groupMembers", refField: "userUser_Id"}},
+                "expenses[].expense_Id": {relation: {entityName: "expenses", refField: "expense_Id"}},
+                "expenses[].name": {relation: {entityName: "expenses", refField: "name"}},
+                "expenses[].total_amount": {relation: {entityName: "expenses", refField: "total_amount"}},
+                "expenses[].usergroupGroup_Id": {relation: {entityName: "expenses", refField: "usergroupGroup_Id"}}
             },
-            keyFields: ["groupId"],
-            joinMetadata: {groupMembers: {entity: UserGroupMember, fieldName: "groupMembers", refTable: "UserGroupMember", refColumns: ["groupGroupId"], joinColumns: ["groupId"], 'type: psql:MANY_TO_ONE}}
+            keyFields: ["group_Id"],
+            joinMetadata: {
+                groupMembers: {entity: UserGroupMember, fieldName: "groupMembers", refTable: "UserGroupMember", refColumns: ["groupGroup_Id"], joinColumns: ["group_Id"], 'type: psql:MANY_TO_ONE},
+                expenses: {entity: Expense, fieldName: "expenses", refTable: "Expense", refColumns: ["usergroupGroup_Id"], joinColumns: ["group_Id"], 'type: psql:MANY_TO_ONE}
+            }
         },
         [USER_GROUP_MEMBER]: {
             entityName: "UserGroupMember",
             tableName: "UserGroupMember",
             fieldMetadata: {
-                g_memberId: {columnName: "g_memberId"},
+                group_member_Id: {columnName: "group_member_Id"},
                 member_role: {columnName: "member_role"},
-                groupGroupId: {columnName: "groupGroupId"},
-                userUserid: {columnName: "userUserid"},
-                "group.groupId": {relation: {entityName: "group", refField: "groupId"}},
+                groupGroup_Id: {columnName: "groupGroup_Id"},
+                userUser_Id: {columnName: "userUser_Id"},
+                "group.group_Id": {relation: {entityName: "group", refField: "group_Id"}},
                 "group.name": {relation: {entityName: "group", refField: "name"}},
-                "user.userid": {relation: {entityName: "user", refField: "userid"}},
+                "user.user_Id": {relation: {entityName: "user", refField: "user_Id"}},
                 "user.email": {relation: {entityName: "user", refField: "email"}},
-                "user.password": {relation: {entityName: "user", refField: "password"}},
-                "user.name": {relation: {entityName: "user", refField: "name"}},
-                "user.user_role": {relation: {entityName: "user", refField: "user_role"}},
-                "user.user_type": {relation: {entityName: "user", refField: "user_type"}},
-                "user.phone_no": {relation: {entityName: "user", refField: "phone_no"}},
+                "user.first_name": {relation: {entityName: "user", refField: "first_name"}},
+                "user.last_name": {relation: {entityName: "user", refField: "last_name"}},
+                "user.phone_number": {relation: {entityName: "user", refField: "phone_number"}},
+                "user.birthdate": {relation: {entityName: "user", refField: "birthdate"}},
                 "user.currency_pref": {relation: {entityName: "user", refField: "currency_pref"}}
             },
-            keyFields: ["g_memberId"],
+            keyFields: ["group_member_Id"],
             joinMetadata: {
-                'group: {entity: UserGroup, fieldName: "'group", refTable: "UserGroup", refColumns: ["groupId"], joinColumns: ["groupGroupId"], 'type: psql:ONE_TO_MANY},
-                user: {entity: User, fieldName: "user", refTable: "User", refColumns: ["userid"], joinColumns: ["userUserid"], 'type: psql:ONE_TO_MANY}
+                'group: {entity: UserGroup, fieldName: "'group", refTable: "UserGroup", refColumns: ["group_Id"], joinColumns: ["groupGroup_Id"], 'type: psql:ONE_TO_MANY},
+                user: {entity: User, fieldName: "user", refTable: "User", refColumns: ["user_Id"], joinColumns: ["userUser_Id"], 'type: psql:ONE_TO_MANY}
             }
         },
         [EXPENSE]: {
             entityName: "Expense",
             tableName: "Expense",
             fieldMetadata: {
-                expenseId: {columnName: "expenseId"},
+                expense_Id: {columnName: "expense_Id"},
                 name: {columnName: "name"},
-                owing_amount: {columnName: "owing_amount"},
-                txnTransactionId: {columnName: "txnTransactionId"},
-                "expenseParticipants[].participantId": {relation: {entityName: "expenseParticipants", refField: "participantId"}},
+                total_amount: {columnName: "total_amount"},
+                usergroupGroup_Id: {columnName: "usergroupGroup_Id"},
+                "expenseParticipants[].participant_Id": {relation: {entityName: "expenseParticipants", refField: "participant_Id"}},
                 "expenseParticipants[].participant_role": {relation: {entityName: "expenseParticipants", refField: "participant_role"}},
-                "expenseParticipants[].expenseExpenseId": {relation: {entityName: "expenseParticipants", refField: "expenseExpenseId"}},
-                "expenseParticipants[].userUserid": {relation: {entityName: "expenseParticipants", refField: "userUserid"}},
-                "txn.transactionId": {relation: {entityName: "txn", refField: "transactionId"}}
+                "expenseParticipants[].owning_amount": {relation: {entityName: "expenseParticipants", refField: "owning_amount"}},
+                "expenseParticipants[].expenseExpense_Id": {relation: {entityName: "expenseParticipants", refField: "expenseExpense_Id"}},
+                "expenseParticipants[].userUser_Id": {relation: {entityName: "expenseParticipants", refField: "userUser_Id"}},
+                "transactions[].transaction_Id": {relation: {entityName: "transactions", refField: "transaction_Id"}},
+                "transactions[].payed_amount": {relation: {entityName: "transactions", refField: "payed_amount"}},
+                "transactions[].expenseExpense_Id": {relation: {entityName: "transactions", refField: "expenseExpense_Id"}},
+                "transactions[].payee_idUser_Id": {relation: {entityName: "transactions", refField: "payee_idUser_Id"}},
+                "usergroup.group_Id": {relation: {entityName: "usergroup", refField: "group_Id"}},
+                "usergroup.name": {relation: {entityName: "usergroup", refField: "name"}}
             },
-            keyFields: ["expenseId"],
+            keyFields: ["expense_Id"],
             joinMetadata: {
-                expenseParticipants: {entity: ExpenseParticipant, fieldName: "expenseParticipants", refTable: "ExpenseParticipant", refColumns: ["expenseExpenseId"], joinColumns: ["expenseId"], 'type: psql:MANY_TO_ONE},
-                txn: {entity: Transaction, fieldName: "txn", refTable: "Transaction", refColumns: ["transactionId"], joinColumns: ["txnTransactionId"], 'type: psql:ONE_TO_MANY}
+                expenseParticipants: {entity: ExpenseParticipant, fieldName: "expenseParticipants", refTable: "ExpenseParticipant", refColumns: ["expenseExpense_Id"], joinColumns: ["expense_Id"], 'type: psql:MANY_TO_ONE},
+                transactions: {entity: Transaction, fieldName: "transactions", refTable: "Transaction", refColumns: ["expenseExpense_Id"], joinColumns: ["expense_Id"], 'type: psql:MANY_TO_ONE},
+                usergroup: {entity: UserGroup, fieldName: "usergroup", refTable: "UserGroup", refColumns: ["group_Id"], joinColumns: ["usergroupGroup_Id"], 'type: psql:ONE_TO_MANY}
             }
         },
         [EXPENSE_PARTICIPANT]: {
             entityName: "ExpenseParticipant",
             tableName: "ExpenseParticipant",
             fieldMetadata: {
-                participantId: {columnName: "participantId"},
+                participant_Id: {columnName: "participant_Id"},
                 participant_role: {columnName: "participant_role"},
-                expenseExpenseId: {columnName: "expenseExpenseId"},
-                userUserid: {columnName: "userUserid"},
-                "expense.expenseId": {relation: {entityName: "expense", refField: "expenseId"}},
+                owning_amount: {columnName: "owning_amount"},
+                expenseExpense_Id: {columnName: "expenseExpense_Id"},
+                userUser_Id: {columnName: "userUser_Id"},
+                "expense.expense_Id": {relation: {entityName: "expense", refField: "expense_Id"}},
                 "expense.name": {relation: {entityName: "expense", refField: "name"}},
-                "expense.owing_amount": {relation: {entityName: "expense", refField: "owing_amount"}},
-                "expense.txnTransactionId": {relation: {entityName: "expense", refField: "txnTransactionId"}},
-                "user.userid": {relation: {entityName: "user", refField: "userid"}},
+                "expense.total_amount": {relation: {entityName: "expense", refField: "total_amount"}},
+                "expense.usergroupGroup_Id": {relation: {entityName: "expense", refField: "usergroupGroup_Id"}},
+                "user.user_Id": {relation: {entityName: "user", refField: "user_Id"}},
                 "user.email": {relation: {entityName: "user", refField: "email"}},
-                "user.password": {relation: {entityName: "user", refField: "password"}},
-                "user.name": {relation: {entityName: "user", refField: "name"}},
-                "user.user_role": {relation: {entityName: "user", refField: "user_role"}},
-                "user.user_type": {relation: {entityName: "user", refField: "user_type"}},
-                "user.phone_no": {relation: {entityName: "user", refField: "phone_no"}},
+                "user.first_name": {relation: {entityName: "user", refField: "first_name"}},
+                "user.last_name": {relation: {entityName: "user", refField: "last_name"}},
+                "user.phone_number": {relation: {entityName: "user", refField: "phone_number"}},
+                "user.birthdate": {relation: {entityName: "user", refField: "birthdate"}},
                 "user.currency_pref": {relation: {entityName: "user", refField: "currency_pref"}}
             },
-            keyFields: ["participantId"],
+            keyFields: ["participant_Id"],
             joinMetadata: {
-                expense: {entity: Expense, fieldName: "expense", refTable: "Expense", refColumns: ["expenseId"], joinColumns: ["expenseExpenseId"], 'type: psql:ONE_TO_MANY},
-                user: {entity: User, fieldName: "user", refTable: "User", refColumns: ["userid"], joinColumns: ["userUserid"], 'type: psql:ONE_TO_MANY}
+                expense: {entity: Expense, fieldName: "expense", refTable: "Expense", refColumns: ["expense_Id"], joinColumns: ["expenseExpense_Id"], 'type: psql:ONE_TO_MANY},
+                user: {entity: User, fieldName: "user", refTable: "User", refColumns: ["user_Id"], joinColumns: ["userUser_Id"], 'type: psql:ONE_TO_MANY}
             }
         },
         [TRANSACTION]: {
             entityName: "Transaction",
             tableName: "Transaction",
             fieldMetadata: {
-                transactionId: {columnName: "transactionId"},
-                "settlements[].settlementId": {relation: {entityName: "settlements", refField: "settlementId"}},
-                "settlements[].settled_amount": {relation: {entityName: "settlements", refField: "settled_amount"}},
-                "settlements[].txnTransactionId": {relation: {entityName: "settlements", refField: "txnTransactionId"}},
-                "expenses[].expenseId": {relation: {entityName: "expenses", refField: "expenseId"}},
-                "expenses[].name": {relation: {entityName: "expenses", refField: "name"}},
-                "expenses[].owing_amount": {relation: {entityName: "expenses", refField: "owing_amount"}},
-                "expenses[].txnTransactionId": {relation: {entityName: "expenses", refField: "txnTransactionId"}}
+                transaction_Id: {columnName: "transaction_Id"},
+                payed_amount: {columnName: "payed_amount"},
+                expenseExpense_Id: {columnName: "expenseExpense_Id"},
+                payee_idUser_Id: {columnName: "payee_idUser_Id"},
+                "expense.expense_Id": {relation: {entityName: "expense", refField: "expense_Id"}},
+                "expense.name": {relation: {entityName: "expense", refField: "name"}},
+                "expense.total_amount": {relation: {entityName: "expense", refField: "total_amount"}},
+                "expense.usergroupGroup_Id": {relation: {entityName: "expense", refField: "usergroupGroup_Id"}},
+                "payee_Id.user_Id": {relation: {entityName: "payee_Id", refField: "user_Id"}},
+                "payee_Id.email": {relation: {entityName: "payee_Id", refField: "email"}},
+                "payee_Id.first_name": {relation: {entityName: "payee_Id", refField: "first_name"}},
+                "payee_Id.last_name": {relation: {entityName: "payee_Id", refField: "last_name"}},
+                "payee_Id.phone_number": {relation: {entityName: "payee_Id", refField: "phone_number"}},
+                "payee_Id.birthdate": {relation: {entityName: "payee_Id", refField: "birthdate"}},
+                "payee_Id.currency_pref": {relation: {entityName: "payee_Id", refField: "currency_pref"}}
             },
-            keyFields: ["transactionId"],
+            keyFields: ["transaction_Id"],
             joinMetadata: {
-                settlements: {entity: Settlement, fieldName: "settlements", refTable: "Settlement", refColumns: ["txnTransactionId"], joinColumns: ["transactionId"], 'type: psql:MANY_TO_ONE},
-                expenses: {entity: Expense, fieldName: "expenses", refTable: "Expense", refColumns: ["txnTransactionId"], joinColumns: ["transactionId"], 'type: psql:MANY_TO_ONE}
+                expense: {entity: Expense, fieldName: "expense", refTable: "Expense", refColumns: ["expense_Id"], joinColumns: ["expenseExpense_Id"], 'type: psql:ONE_TO_MANY},
+                payee_Id: {entity: User, fieldName: "payee_Id", refTable: "User", refColumns: ["user_Id"], joinColumns: ["payee_idUser_Id"], 'type: psql:ONE_TO_MANY}
             }
-        },
-        [SETTLEMENT]: {
-            entityName: "Settlement",
-            tableName: "Settlement",
-            fieldMetadata: {
-                settlementId: {columnName: "settlementId"},
-                settled_amount: {columnName: "settled_amount"},
-                txnTransactionId: {columnName: "txnTransactionId"},
-                "txn.transactionId": {relation: {entityName: "txn", refField: "transactionId"}}
-            },
-            keyFields: ["settlementId"],
-            joinMetadata: {txn: {entity: Transaction, fieldName: "txn", refTable: "Transaction", refColumns: ["transactionId"], joinColumns: ["txnTransactionId"], 'type: psql:ONE_TO_MANY}}
         },
         [BANK_ACCOUNT]: {
             entityName: "BankAccount",
             tableName: "BankAccount",
             fieldMetadata: {
-                accountId: {columnName: "accountId"},
+                account_Id: {columnName: "account_Id"},
                 account_no: {columnName: "account_no"},
                 bank: {columnName: "bank"},
                 branch: {columnName: "branch"},
-                "cards[].cardId": {relation: {entityName: "cards", refField: "cardId"}},
+                "cards[].card_Id": {relation: {entityName: "cards", refField: "card_Id"}},
                 "cards[].card_no": {relation: {entityName: "cards", refField: "card_no"}},
                 "cards[].card_name": {relation: {entityName: "cards", refField: "card_name"}},
                 "cards[].card_expiry": {relation: {entityName: "cards", refField: "card_expiry"}},
                 "cards[].card_cv": {relation: {entityName: "cards", refField: "card_cv"}},
-                "cards[].bankaccountAccountId": {relation: {entityName: "cards", refField: "bankaccountAccountId"}}
+                "cards[].bankaccountAccount_Id": {relation: {entityName: "cards", refField: "bankaccountAccount_Id"}}
             },
-            keyFields: ["accountId"],
-            joinMetadata: {cards: {entity: Card, fieldName: "cards", refTable: "Card", refColumns: ["bankaccountAccountId"], joinColumns: ["accountId"], 'type: psql:MANY_TO_ONE}}
+            keyFields: ["account_Id"],
+            joinMetadata: {cards: {entity: Card, fieldName: "cards", refTable: "Card", refColumns: ["bankaccountAccount_Id"], joinColumns: ["account_Id"], 'type: psql:MANY_TO_ONE}}
         },
         [CARD]: {
             entityName: "Card",
             tableName: "Card",
             fieldMetadata: {
-                cardId: {columnName: "cardId"},
+                card_Id: {columnName: "card_Id"},
                 card_no: {columnName: "card_no"},
                 card_name: {columnName: "card_name"},
                 card_expiry: {columnName: "card_expiry"},
                 card_cv: {columnName: "card_cv"},
-                bankaccountAccountId: {columnName: "bankaccountAccountId"},
-                "bankAccount.accountId": {relation: {entityName: "bankAccount", refField: "accountId"}},
+                bankaccountAccount_Id: {columnName: "bankaccountAccount_Id"},
+                "bankAccount.account_Id": {relation: {entityName: "bankAccount", refField: "account_Id"}},
                 "bankAccount.account_no": {relation: {entityName: "bankAccount", refField: "account_no"}},
                 "bankAccount.bank": {relation: {entityName: "bankAccount", refField: "bank"}},
                 "bankAccount.branch": {relation: {entityName: "bankAccount", refField: "branch"}}
             },
-            keyFields: ["cardId"],
-            joinMetadata: {bankAccount: {entity: BankAccount, fieldName: "bankAccount", refTable: "BankAccount", refColumns: ["accountId"], joinColumns: ["bankaccountAccountId"], 'type: psql:ONE_TO_MANY}}
+            keyFields: ["card_Id"],
+            joinMetadata: {bankAccount: {entity: BankAccount, fieldName: "bankAccount", refTable: "BankAccount", refColumns: ["account_Id"], joinColumns: ["bankaccountAccount_Id"], 'type: psql:ONE_TO_MANY}}
         }
     };
 
@@ -240,13 +292,13 @@ public isolated client class Client {
         self.dbClient = dbClient;
         self.persistClients = {
             [USER]: check new (dbClient, self.metadata.get(USER), psql:MYSQL_SPECIFICS),
+            [FRIEND_REQUEST]: check new (dbClient, self.metadata.get(FRIEND_REQUEST), psql:MYSQL_SPECIFICS),
             [FRIEND]: check new (dbClient, self.metadata.get(FRIEND), psql:MYSQL_SPECIFICS),
             [USER_GROUP]: check new (dbClient, self.metadata.get(USER_GROUP), psql:MYSQL_SPECIFICS),
             [USER_GROUP_MEMBER]: check new (dbClient, self.metadata.get(USER_GROUP_MEMBER), psql:MYSQL_SPECIFICS),
             [EXPENSE]: check new (dbClient, self.metadata.get(EXPENSE), psql:MYSQL_SPECIFICS),
             [EXPENSE_PARTICIPANT]: check new (dbClient, self.metadata.get(EXPENSE_PARTICIPANT), psql:MYSQL_SPECIFICS),
             [TRANSACTION]: check new (dbClient, self.metadata.get(TRANSACTION), psql:MYSQL_SPECIFICS),
-            [SETTLEMENT]: check new (dbClient, self.metadata.get(SETTLEMENT), psql:MYSQL_SPECIFICS),
             [BANK_ACCOUNT]: check new (dbClient, self.metadata.get(BANK_ACCOUNT), psql:MYSQL_SPECIFICS),
             [CARD]: check new (dbClient, self.metadata.get(CARD), psql:MYSQL_SPECIFICS)
         };
@@ -257,37 +309,76 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get users/[int userid](UserTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get users/[string user_Id](UserTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post users(UserInsert[] data) returns int[]|persist:Error {
+    isolated resource function post users(UserInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER);
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from UserInsert inserted in data
-            select inserted.userid;
+            select inserted.user_Id;
     }
 
-    isolated resource function put users/[int userid](UserUpdate value) returns User|persist:Error {
+    isolated resource function put users/[string user_Id](UserUpdate value) returns User|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER);
         }
-        _ = check sqlClient.runUpdateQuery(userid, value);
-        return self->/users/[userid].get();
+        _ = check sqlClient.runUpdateQuery(user_Id, value);
+        return self->/users/[user_Id].get();
     }
 
-    isolated resource function delete users/[int userid]() returns User|persist:Error {
-        User result = check self->/users/[userid].get();
+    isolated resource function delete users/[string user_Id]() returns User|persist:Error {
+        User result = check self->/users/[user_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER);
         }
-        _ = check sqlClient.runDeleteQuery(userid);
+        _ = check sqlClient.runDeleteQuery(user_Id);
+        return result;
+    }
+
+    isolated resource function get friendrequests(FriendRequestTargetType targetType = <>, sql:ParameterizedQuery whereClause = ``, sql:ParameterizedQuery orderByClause = ``, sql:ParameterizedQuery limitClause = ``, sql:ParameterizedQuery groupByClause = ``) returns stream<targetType, persist:Error?> = @java:Method {
+        'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
+        name: "query"
+    } external;
+
+    isolated resource function get friendrequests/[int friend_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+        'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
+        name: "queryOne"
+    } external;
+
+    isolated resource function post friendrequests(FriendRequestInsert[] data) returns int[]|persist:Error {
+        psql:SQLClient sqlClient;
+        lock {
+            sqlClient = self.persistClients.get(FRIEND_REQUEST);
+        }
+        _ = check sqlClient.runBatchInsertQuery(data);
+        return from FriendRequestInsert inserted in data
+            select inserted.friend_Id;
+    }
+
+    isolated resource function put friendrequests/[int friend_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
+        psql:SQLClient sqlClient;
+        lock {
+            sqlClient = self.persistClients.get(FRIEND_REQUEST);
+        }
+        _ = check sqlClient.runUpdateQuery(friend_Id, value);
+        return self->/friendrequests/[friend_Id].get();
+    }
+
+    isolated resource function delete friendrequests/[int friend_Id]() returns FriendRequest|persist:Error {
+        FriendRequest result = check self->/friendrequests/[friend_Id].get();
+        psql:SQLClient sqlClient;
+        lock {
+            sqlClient = self.persistClients.get(FRIEND_REQUEST);
+        }
+        _ = check sqlClient.runDeleteQuery(friend_Id);
         return result;
     }
 
@@ -296,7 +387,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friends/[int friendId](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friends/[int friend_Id](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -308,25 +399,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from FriendInsert inserted in data
-            select inserted.friendId;
+            select inserted.friend_Id;
     }
 
-    isolated resource function put friends/[int friendId](FriendUpdate value) returns Friend|persist:Error {
+    isolated resource function put friends/[int friend_Id](FriendUpdate value) returns Friend|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
         }
-        _ = check sqlClient.runUpdateQuery(friendId, value);
-        return self->/friends/[friendId].get();
+        _ = check sqlClient.runUpdateQuery(friend_Id, value);
+        return self->/friends/[friend_Id].get();
     }
 
-    isolated resource function delete friends/[int friendId]() returns Friend|persist:Error {
-        Friend result = check self->/friends/[friendId].get();
+    isolated resource function delete friends/[int friend_Id]() returns Friend|persist:Error {
+        Friend result = check self->/friends/[friend_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
         }
-        _ = check sqlClient.runDeleteQuery(friendId);
+        _ = check sqlClient.runDeleteQuery(friend_Id);
         return result;
     }
 
@@ -335,7 +426,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroups/[int groupId](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroups/[int group_Id](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -347,25 +438,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from UserGroupInsert inserted in data
-            select inserted.groupId;
+            select inserted.group_Id;
     }
 
-    isolated resource function put usergroups/[int groupId](UserGroupUpdate value) returns UserGroup|persist:Error {
+    isolated resource function put usergroups/[int group_Id](UserGroupUpdate value) returns UserGroup|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
         }
-        _ = check sqlClient.runUpdateQuery(groupId, value);
-        return self->/usergroups/[groupId].get();
+        _ = check sqlClient.runUpdateQuery(group_Id, value);
+        return self->/usergroups/[group_Id].get();
     }
 
-    isolated resource function delete usergroups/[int groupId]() returns UserGroup|persist:Error {
-        UserGroup result = check self->/usergroups/[groupId].get();
+    isolated resource function delete usergroups/[int group_Id]() returns UserGroup|persist:Error {
+        UserGroup result = check self->/usergroups/[group_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
         }
-        _ = check sqlClient.runDeleteQuery(groupId);
+        _ = check sqlClient.runDeleteQuery(group_Id);
         return result;
     }
 
@@ -374,7 +465,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroupmembers/[int g_memberId](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroupmembers/[int group_member_Id](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -386,25 +477,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from UserGroupMemberInsert inserted in data
-            select inserted.g_memberId;
+            select inserted.group_member_Id;
     }
 
-    isolated resource function put usergroupmembers/[int g_memberId](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
+    isolated resource function put usergroupmembers/[int group_member_Id](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
         }
-        _ = check sqlClient.runUpdateQuery(g_memberId, value);
-        return self->/usergroupmembers/[g_memberId].get();
+        _ = check sqlClient.runUpdateQuery(group_member_Id, value);
+        return self->/usergroupmembers/[group_member_Id].get();
     }
 
-    isolated resource function delete usergroupmembers/[int g_memberId]() returns UserGroupMember|persist:Error {
-        UserGroupMember result = check self->/usergroupmembers/[g_memberId].get();
+    isolated resource function delete usergroupmembers/[int group_member_Id]() returns UserGroupMember|persist:Error {
+        UserGroupMember result = check self->/usergroupmembers/[group_member_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
         }
-        _ = check sqlClient.runDeleteQuery(g_memberId);
+        _ = check sqlClient.runDeleteQuery(group_member_Id);
         return result;
     }
 
@@ -413,7 +504,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenses/[int expenseId](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenses/[int expense_Id](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -425,25 +516,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from ExpenseInsert inserted in data
-            select inserted.expenseId;
+            select inserted.expense_Id;
     }
 
-    isolated resource function put expenses/[int expenseId](ExpenseUpdate value) returns Expense|persist:Error {
+    isolated resource function put expenses/[int expense_Id](ExpenseUpdate value) returns Expense|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
         }
-        _ = check sqlClient.runUpdateQuery(expenseId, value);
-        return self->/expenses/[expenseId].get();
+        _ = check sqlClient.runUpdateQuery(expense_Id, value);
+        return self->/expenses/[expense_Id].get();
     }
 
-    isolated resource function delete expenses/[int expenseId]() returns Expense|persist:Error {
-        Expense result = check self->/expenses/[expenseId].get();
+    isolated resource function delete expenses/[int expense_Id]() returns Expense|persist:Error {
+        Expense result = check self->/expenses/[expense_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
         }
-        _ = check sqlClient.runDeleteQuery(expenseId);
+        _ = check sqlClient.runDeleteQuery(expense_Id);
         return result;
     }
 
@@ -452,7 +543,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenseparticipants/[int participantId](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenseparticipants/[int participant_Id](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -464,25 +555,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from ExpenseParticipantInsert inserted in data
-            select inserted.participantId;
+            select inserted.participant_Id;
     }
 
-    isolated resource function put expenseparticipants/[int participantId](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
+    isolated resource function put expenseparticipants/[int participant_Id](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
         }
-        _ = check sqlClient.runUpdateQuery(participantId, value);
-        return self->/expenseparticipants/[participantId].get();
+        _ = check sqlClient.runUpdateQuery(participant_Id, value);
+        return self->/expenseparticipants/[participant_Id].get();
     }
 
-    isolated resource function delete expenseparticipants/[int participantId]() returns ExpenseParticipant|persist:Error {
-        ExpenseParticipant result = check self->/expenseparticipants/[participantId].get();
+    isolated resource function delete expenseparticipants/[int participant_Id]() returns ExpenseParticipant|persist:Error {
+        ExpenseParticipant result = check self->/expenseparticipants/[participant_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
         }
-        _ = check sqlClient.runDeleteQuery(participantId);
+        _ = check sqlClient.runDeleteQuery(participant_Id);
         return result;
     }
 
@@ -491,7 +582,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get transactions/[int transactionId](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get transactions/[int transaction_Id](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -503,64 +594,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from TransactionInsert inserted in data
-            select inserted.transactionId;
+            select inserted.transaction_Id;
     }
 
-    isolated resource function put transactions/[int transactionId](TransactionUpdate value) returns Transaction|persist:Error {
+    isolated resource function put transactions/[int transaction_Id](TransactionUpdate value) returns Transaction|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
         }
-        _ = check sqlClient.runUpdateQuery(transactionId, value);
-        return self->/transactions/[transactionId].get();
+        _ = check sqlClient.runUpdateQuery(transaction_Id, value);
+        return self->/transactions/[transaction_Id].get();
     }
 
-    isolated resource function delete transactions/[int transactionId]() returns Transaction|persist:Error {
-        Transaction result = check self->/transactions/[transactionId].get();
+    isolated resource function delete transactions/[int transaction_Id]() returns Transaction|persist:Error {
+        Transaction result = check self->/transactions/[transaction_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
         }
-        _ = check sqlClient.runDeleteQuery(transactionId);
-        return result;
-    }
-
-    isolated resource function get settlements(SettlementTargetType targetType = <>, sql:ParameterizedQuery whereClause = ``, sql:ParameterizedQuery orderByClause = ``, sql:ParameterizedQuery limitClause = ``, sql:ParameterizedQuery groupByClause = ``) returns stream<targetType, persist:Error?> = @java:Method {
-        'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
-        name: "query"
-    } external;
-
-    isolated resource function get settlements/[int settlementId](SettlementTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
-        'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
-        name: "queryOne"
-    } external;
-
-    isolated resource function post settlements(SettlementInsert[] data) returns int[]|persist:Error {
-        psql:SQLClient sqlClient;
-        lock {
-            sqlClient = self.persistClients.get(SETTLEMENT);
-        }
-        _ = check sqlClient.runBatchInsertQuery(data);
-        return from SettlementInsert inserted in data
-            select inserted.settlementId;
-    }
-
-    isolated resource function put settlements/[int settlementId](SettlementUpdate value) returns Settlement|persist:Error {
-        psql:SQLClient sqlClient;
-        lock {
-            sqlClient = self.persistClients.get(SETTLEMENT);
-        }
-        _ = check sqlClient.runUpdateQuery(settlementId, value);
-        return self->/settlements/[settlementId].get();
-    }
-
-    isolated resource function delete settlements/[int settlementId]() returns Settlement|persist:Error {
-        Settlement result = check self->/settlements/[settlementId].get();
-        psql:SQLClient sqlClient;
-        lock {
-            sqlClient = self.persistClients.get(SETTLEMENT);
-        }
-        _ = check sqlClient.runDeleteQuery(settlementId);
+        _ = check sqlClient.runDeleteQuery(transaction_Id);
         return result;
     }
 
@@ -569,7 +621,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get bankaccounts/[int accountId](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get bankaccounts/[int account_Id](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -581,25 +633,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from BankAccountInsert inserted in data
-            select inserted.accountId;
+            select inserted.account_Id;
     }
 
-    isolated resource function put bankaccounts/[int accountId](BankAccountUpdate value) returns BankAccount|persist:Error {
+    isolated resource function put bankaccounts/[int account_Id](BankAccountUpdate value) returns BankAccount|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
         }
-        _ = check sqlClient.runUpdateQuery(accountId, value);
-        return self->/bankaccounts/[accountId].get();
+        _ = check sqlClient.runUpdateQuery(account_Id, value);
+        return self->/bankaccounts/[account_Id].get();
     }
 
-    isolated resource function delete bankaccounts/[int accountId]() returns BankAccount|persist:Error {
-        BankAccount result = check self->/bankaccounts/[accountId].get();
+    isolated resource function delete bankaccounts/[int account_Id]() returns BankAccount|persist:Error {
+        BankAccount result = check self->/bankaccounts/[account_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
         }
-        _ = check sqlClient.runDeleteQuery(accountId);
+        _ = check sqlClient.runDeleteQuery(account_Id);
         return result;
     }
 
@@ -608,7 +660,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get cards/[int cardId](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get cards/[int card_Id](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -620,25 +672,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from CardInsert inserted in data
-            select inserted.cardId;
+            select inserted.card_Id;
     }
 
-    isolated resource function put cards/[int cardId](CardUpdate value) returns Card|persist:Error {
+    isolated resource function put cards/[int card_Id](CardUpdate value) returns Card|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
         }
-        _ = check sqlClient.runUpdateQuery(cardId, value);
-        return self->/cards/[cardId].get();
+        _ = check sqlClient.runUpdateQuery(card_Id, value);
+        return self->/cards/[card_Id].get();
     }
 
-    isolated resource function delete cards/[int cardId]() returns Card|persist:Error {
-        Card result = check self->/cards/[cardId].get();
+    isolated resource function delete cards/[int card_Id]() returns Card|persist:Error {
+        Card result = check self->/cards/[card_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
         }
-        _ = check sqlClient.runDeleteQuery(cardId);
+        _ = check sqlClient.runDeleteQuery(card_Id);
         return result;
     }
 

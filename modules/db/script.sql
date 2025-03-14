@@ -4,100 +4,108 @@
 -- Please verify the generated scripts and execute them against the target DB server.
 
 DROP TABLE IF EXISTS `ExpenseParticipant`;
-DROP TABLE IF EXISTS `Settlement`;
 DROP TABLE IF EXISTS `Friend`;
+DROP TABLE IF EXISTS `Transaction`;
 DROP TABLE IF EXISTS `Expense`;
+DROP TABLE IF EXISTS `FriendRequest`;
 DROP TABLE IF EXISTS `UserGroupMember`;
 DROP TABLE IF EXISTS `Card`;
 DROP TABLE IF EXISTS `User`;
-DROP TABLE IF EXISTS `Transaction`;
 DROP TABLE IF EXISTS `BankAccount`;
 DROP TABLE IF EXISTS `UserGroup`;
 
 CREATE TABLE `UserGroup` (
-	`groupId` INT NOT NULL,
+	`group_Id` INT NOT NULL,
 	`name` VARCHAR(191) NOT NULL,
-	PRIMARY KEY(`groupId`)
+	PRIMARY KEY(`group_Id`)
 );
 
 CREATE TABLE `BankAccount` (
-	`accountId` INT NOT NULL,
+	`account_Id` INT NOT NULL,
 	`account_no` VARCHAR(191) NOT NULL,
 	`bank` VARCHAR(191) NOT NULL,
 	`branch` VARCHAR(191) NOT NULL,
-	PRIMARY KEY(`accountId`)
-);
-
-CREATE TABLE `Transaction` (
-	`transactionId` INT NOT NULL,
-	PRIMARY KEY(`transactionId`)
+	PRIMARY KEY(`account_Id`)
 );
 
 CREATE TABLE `User` (
-	`userid` INT NOT NULL,
+	`user_Id` VARCHAR(191) NOT NULL,
 	`email` VARCHAR(191) NOT NULL,
-	`password` VARCHAR(191) NOT NULL,
-	`name` VARCHAR(191) NOT NULL,
-	`user_role` VARCHAR(191) NOT NULL,
-	`user_type` VARCHAR(191) NOT NULL,
-	`phone_no` VARCHAR(191) NOT NULL,
+	`first_name` VARCHAR(191) NOT NULL,
+	`last_name` VARCHAR(191) NOT NULL,
+	`phone_number` VARCHAR(191) NOT NULL,
+	`birthdate` VARCHAR(191) NOT NULL,
 	`currency_pref` VARCHAR(191) NOT NULL,
-	PRIMARY KEY(`userid`)
+	PRIMARY KEY(`user_Id`)
 );
 
 CREATE TABLE `Card` (
-	`cardId` INT NOT NULL,
+	`card_Id` INT NOT NULL,
 	`card_no` VARCHAR(191) NOT NULL,
 	`card_name` VARCHAR(191) NOT NULL,
 	`card_expiry` VARCHAR(191) NOT NULL,
 	`card_cv` VARCHAR(191) NOT NULL,
-	`bankaccountAccountId` INT NOT NULL,
-	FOREIGN KEY(`bankaccountAccountId`) REFERENCES `BankAccount`(`accountId`),
-	PRIMARY KEY(`cardId`)
+	`bankaccountAccount_Id` INT NOT NULL,
+	FOREIGN KEY(`bankaccountAccount_Id`) REFERENCES `BankAccount`(`account_Id`),
+	PRIMARY KEY(`card_Id`)
 );
 
 CREATE TABLE `UserGroupMember` (
-	`g_memberId` INT NOT NULL,
+	`group_member_Id` INT NOT NULL,
 	`member_role` VARCHAR(191) NOT NULL,
-	`groupGroupId` INT NOT NULL,
-	FOREIGN KEY(`groupGroupId`) REFERENCES `UserGroup`(`groupId`),
-	`userUserid` INT NOT NULL,
-	FOREIGN KEY(`userUserid`) REFERENCES `User`(`userid`),
-	PRIMARY KEY(`g_memberId`)
+	`groupGroup_Id` INT NOT NULL,
+	FOREIGN KEY(`groupGroup_Id`) REFERENCES `UserGroup`(`group_Id`),
+	`userUser_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`userUser_Id`) REFERENCES `User`(`user_Id`),
+	PRIMARY KEY(`group_member_Id`)
+);
+
+CREATE TABLE `FriendRequest` (
+	`friend_Id` INT NOT NULL,
+	`receive_user_Id` INT NOT NULL,
+	`status` VARCHAR(191) NOT NULL,
+	`send_user_idUser_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`send_user_idUser_Id`) REFERENCES `User`(`user_Id`),
+	PRIMARY KEY(`friend_Id`)
 );
 
 CREATE TABLE `Expense` (
-	`expenseId` INT NOT NULL,
+	`expense_Id` INT NOT NULL,
 	`name` VARCHAR(191) NOT NULL,
-	`owing_amount` DECIMAL(65,30) NOT NULL,
-	`txnTransactionId` INT NOT NULL,
-	FOREIGN KEY(`txnTransactionId`) REFERENCES `Transaction`(`transactionId`),
-	PRIMARY KEY(`expenseId`)
+	`total_amount` DECIMAL(65,30) NOT NULL,
+	`usergroupGroup_Id` INT NOT NULL,
+	FOREIGN KEY(`usergroupGroup_Id`) REFERENCES `UserGroup`(`group_Id`),
+	PRIMARY KEY(`expense_Id`)
+);
+
+CREATE TABLE `Transaction` (
+	`transaction_Id` INT NOT NULL,
+	`payed_amount` DECIMAL(65,30) NOT NULL,
+	`expenseExpense_Id` INT NOT NULL,
+	FOREIGN KEY(`expenseExpense_Id`) REFERENCES `Expense`(`expense_Id`),
+	`payee_idUser_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`payee_idUser_Id`) REFERENCES `User`(`user_Id`),
+	PRIMARY KEY(`transaction_Id`)
 );
 
 CREATE TABLE `Friend` (
-	`friendId` INT NOT NULL,
-	`userUserid` INT NOT NULL,
-	FOREIGN KEY(`userUserid`) REFERENCES `User`(`userid`),
-	PRIMARY KEY(`friendId`)
-);
-
-CREATE TABLE `Settlement` (
-	`settlementId` INT NOT NULL,
-	`settled_amount` DECIMAL(65,30) NOT NULL,
-	`txnTransactionId` INT NOT NULL,
-	FOREIGN KEY(`txnTransactionId`) REFERENCES `Transaction`(`transactionId`),
-	PRIMARY KEY(`settlementId`)
+	`friend_Id` INT NOT NULL,
+	`user_id_1User_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`user_id_1User_Id`) REFERENCES `User`(`user_Id`),
+	`user_id_2User_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`user_id_2User_Id`) REFERENCES `User`(`user_Id`),
+	PRIMARY KEY(`friend_Id`)
 );
 
 CREATE TABLE `ExpenseParticipant` (
-	`participantId` INT NOT NULL,
+	`participant_Id` INT NOT NULL,
 	`participant_role` VARCHAR(191) NOT NULL,
-	`expenseExpenseId` INT NOT NULL,
-	FOREIGN KEY(`expenseExpenseId`) REFERENCES `Expense`(`expenseId`),
-	`userUserid` INT NOT NULL,
-	FOREIGN KEY(`userUserid`) REFERENCES `User`(`userid`),
-	PRIMARY KEY(`participantId`)
+	`owning_amount` DECIMAL(65,30) NOT NULL,
+	`expenseExpense_Id` INT NOT NULL,
+	FOREIGN KEY(`expenseExpense_Id`) REFERENCES `Expense`(`expense_Id`),
+	`userUser_Id` VARCHAR(191) NOT NULL,
+	FOREIGN KEY(`userUser_Id`) REFERENCES `User`(`user_Id`),
+	PRIMARY KEY(`participant_Id`)
 );
 
 
