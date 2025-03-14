@@ -32,7 +32,8 @@ public function getUserService() returns http:Service {
 
         }
 
-        resource function post createUser(http:Caller caller, http:Request req, @http:Header string authorization) returns http:Created & readonly|error? {
+        // CREATE USER
+        resource function post user(http:Caller caller, http:Request req, @http:Header string authorization) returns http:Created & readonly|error? {
 
             http:Response response = new;
 
@@ -114,6 +115,104 @@ public function getUserService() returns http:Service {
                 return caller->respond(response);
             }
 
+        }
+
+        // UPDATE USER
+        resource function put user(http:Caller caller, http:Request req, @http:Header string authorization, @http:Payload UserUpdatePayload payload) returns http:Ok & readonly|error? {
+
+            http:Response response = new;
+
+            boolean|error isValid = utils:authenticate(req);
+            if isValid is error || !isValid {
+                response.statusCode = 401;
+                response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
+                check caller->respond(response);
+                return;
+            }
+            string id = payload.id;
+
+            db:UserWithRelations|persist:Error existingUser = dbClient->/users/[id].get(db:UserWithRelations);
+            if existingUser is persist:NotFoundError {
+                response.statusCode = http:STATUS_NOT_FOUND;
+                response.setJsonPayload({"status": "error", "message": "User not found"});
+                return caller->respond(response);
+            } else if existingUser is persist:Error {
+                response.statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+                response.setJsonPayload({"status": "error", "message": "Database error"});
+                return caller->respond(response);
+            }
+
+            db:UserUpdate updateData = {
+                first_name: payload.first_name,
+                last_name: payload.last_name,
+                phone_number: payload.phone_number,
+                birthdate: payload.birthdate,
+                currency_pref: payload.currency_pref
+            };
+
+            db:User|persist:Error result = dbClient->/users/[id].put(updateData);
+            if result is persist:Error {
+                response.statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+                response.setJsonPayload({"status": "error", "message": "Failed to update user"});
+                return caller->respond(response);
+            }
+
+            response.statusCode = http:STATUS_OK;
+            response.setJsonPayload({"status": "success", "message": "User updated successfully", "userId": id});
+            return caller->respond(response);
+
+        }
+
+        // GET ALL USERS
+        resource function get user(http:Caller caller, http:Request req) returns http:Ok & readonly|error? {
+            http:Response response = new;
+
+            // Fetch all users
+            stream<db:UserWithRelations, persist:Error?> userStream = dbClient->/users.get(db:UserWithRelations);
+            db:UserWithRelations[] users = check from db:UserWithRelations user in userStream
+                select user;
+
+            response.statusCode = http:STATUS_OK;
+            response.setJsonPayload({
+                "status": "success",
+                "message": "Users retrieved successfully",
+                "data": users
+            });
+            return caller->respond(response);
+        }
+
+        // GET USER BY ID
+        resource function get user/[string id](http:Caller caller, http:Request req, @http:Header string authorization) returns http:Ok & readonly|error? {
+            http:Response response = new;
+
+            // Validate token (same as create/update)
+            boolean|error isValid = utils:authenticate(req);
+            if isValid is error || !isValid {
+                response.statusCode = 401;
+                response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
+                check caller->respond(response);
+                return;
+            }
+
+            // Fetch user by ID
+            db:UserWithRelations|persist:Error user = dbClient->/users/[id].get(db:UserWithRelations);
+            if user is persist:NotFoundError {
+                response.statusCode = http:STATUS_NOT_FOUND;
+                response.setJsonPayload({"status": "error", "message": "User not found"});
+                return caller->respond(response);
+            } else if user is persist:Error {
+                response.statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+                response.setJsonPayload({"status": "error", "message": "Database error"});
+                return caller->respond(response);
+            }
+
+            response.statusCode = http:STATUS_OK;
+            response.setJsonPayload({
+                "status": "success",
+                "message": "User retrieved successfully",
+                "data": user is db:UserWithRelations ? user.toJson() : {}
+            });
+            return caller->respond(response);
         }
 
     };

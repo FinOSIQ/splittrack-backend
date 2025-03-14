@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS `User`;
 DROP TABLE IF EXISTS `BankAccount`;
 DROP TABLE IF EXISTS `UserGroup`;
 
-CREATE TABLE `UserGroup` (
+CREATE TABLE  `UserGroup` (
 	`group_Id` INT NOT NULL,
 	`name` VARCHAR(191) NOT NULL,
 	PRIMARY KEY(`group_Id`)
