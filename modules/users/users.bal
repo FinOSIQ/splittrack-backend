@@ -1,5 +1,6 @@
 import splittrack_backend.db;
-import splittrack_backend.interceptor as utils;
+import splittrack_backend.interceptor as authUtils;
+import splittrack_backend.interceptor as emailUtils;
 
 import ballerina/http;
 import ballerina/log;
@@ -18,7 +19,7 @@ public function getUserService() returns http:Service {
     return service object {
         resource function get sayHello(http:Caller caller, http:Request req) returns error? {
 
-            boolean|error isValid = utils:authenticate(req);
+            boolean|error isValid = authUtils:authenticate(req);
             if isValid is error || !isValid {
                 http:Response res = new;
                 res.statusCode = 401;
@@ -37,7 +38,7 @@ public function getUserService() returns http:Service {
 
             http:Response response = new;
 
-            boolean|error isValid = utils:authenticate(req);
+            boolean|error isValid = authUtils:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
@@ -78,7 +79,7 @@ public function getUserService() returns http:Service {
             string birthdate = check userInfo.birthdate.ensureType(string);
             string phoneNumber = check userInfo.phone_number.ensureType(string);
 
-            db:UserWithRelations|persist:Error existingUser = dbClient->/users/[id].get(db:UserWithRelations);
+            db:UserWithRelations|persist:Error existingUser = dbClient->/users/[id];
             if existingUser is db:UserWithRelations {
                 response.statusCode = http:STATUS_OK;
                 response.setJsonPayload({"status": "success", "message": "User already exists", "userId": id});
@@ -102,10 +103,26 @@ public function getUserService() returns http:Service {
                     return caller->respond(response);
                 }
 
+                // Use the imported email function
+                emailUtils:UserRegistrationEmailParams emailParams = {
+                    recipientEmail: email,
+                    firstName: firstName,
+                    userId: id
+                };
+
+                string message = "User created successfully";
+
+                boolean|error emailSent = emailUtils:sendUserRegistrationEmail(emailParams);
+                if emailSent is error {
+                    message = message + ". Email failed: " + emailSent.message();
+                } else {
+                    message = message + ". Email sent successfully";
+                }
+
                 response.statusCode = http:STATUS_CREATED;
                 response.setJsonPayload({
                     "status": "success",
-                    "message": "User created successfully",
+                    "message": message,
                     "userId": id
                 });
                 return caller->respond(response);
@@ -118,20 +135,19 @@ public function getUserService() returns http:Service {
         }
 
         // UPDATE USER
-        resource function put user(http:Caller caller, http:Request req, @http:Header string authorization, @http:Payload UserUpdatePayload payload) returns http:Ok & readonly|error? {
+        resource function put user/[string id](http:Caller caller, http:Request req, @http:Header string authorization, @http:Payload UserUpdatePayload payload) returns http:Ok & readonly|error? {
 
             http:Response response = new;
 
-            boolean|error isValid = utils:authenticate(req);
+            boolean|error isValid = authUtils:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
                 check caller->respond(response);
                 return;
             }
-            string id = payload.id;
 
-            db:UserWithRelations|persist:Error existingUser = dbClient->/users/[id].get(db:UserWithRelations);
+            db:UserWithRelations|persist:Error existingUser = dbClient->/users/[id](db:User);
             if existingUser is persist:NotFoundError {
                 response.statusCode = http:STATUS_NOT_FOUND;
                 response.setJsonPayload({"status": "error", "message": "User not found"});
@@ -167,8 +183,7 @@ public function getUserService() returns http:Service {
         resource function get user(http:Caller caller, http:Request req) returns http:Ok & readonly|error? {
             http:Response response = new;
 
-            // Fetch all users
-            stream<db:UserWithRelations, persist:Error?> userStream = dbClient->/users.get(db:UserWithRelations);
+            stream<db:UserWithRelations, persist:Error?> userStream = dbClient->/users;
             db:UserWithRelations[] users = check from db:UserWithRelations user in userStream
                 select user;
 
@@ -185,8 +200,7 @@ public function getUserService() returns http:Service {
         resource function get user/[string id](http:Caller caller, http:Request req, @http:Header string authorization) returns http:Ok & readonly|error? {
             http:Response response = new;
 
-            // Validate token (same as create/update)
-            boolean|error isValid = utils:authenticate(req);
+            boolean|error isValid = authUtils:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
@@ -194,8 +208,7 @@ public function getUserService() returns http:Service {
                 return;
             }
 
-            // Fetch user by ID
-            db:UserWithRelations|persist:Error user = dbClient->/users/[id].get(db:UserWithRelations);
+            db:UserWithRelations|persist:Error user = dbClient->/users/[id];
             if user is persist:NotFoundError {
                 response.statusCode = http:STATUS_NOT_FOUND;
                 response.setJsonPayload({"status": "error", "message": "User not found"});
@@ -211,6 +224,38 @@ public function getUserService() returns http:Service {
                 "status": "success",
                 "message": "User retrieved successfully",
                 "data": user is db:UserWithRelations ? user.toJson() : {}
+            });
+            return caller->respond(response);
+        }
+
+        // DELETE USER BY ID
+        resource function delete user/[string id](http:Caller caller, http:Request req, @http:Header string authorization) returns http:Ok & readonly|error? {
+            http:Response response = new;
+
+            boolean|error isValid = authUtils:authenticate(req);
+            if isValid is error || !isValid {
+                response.statusCode = 401;
+                response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
+                check caller->respond(response);
+                return;
+            }
+
+            db:User|persist:Error result = dbClient->/users/[id].delete();
+            if result is persist:NotFoundError {
+                response.statusCode = http:STATUS_NOT_FOUND;
+                response.setJsonPayload({"status": "error", "message": "User not found"});
+                return caller->respond(response);
+            } else if result is persist:Error {
+                response.statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+                response.setJsonPayload({"status": "error", "message": result.message()});
+                return caller->respond(response);
+            }
+
+            response.statusCode = http:STATUS_OK;
+            response.setJsonPayload({
+                "status": "success",
+                "message": "User deleted successfully",
+                "userId": id
             });
             return caller->respond(response);
         }
