@@ -1,6 +1,6 @@
 import splittrack_backend.db;
-import splittrack_backend.interceptor as authUtils;
-import splittrack_backend.interceptor as emailUtils;
+import splittrack_backend.interceptor as authInterceptor;
+import splittrack_backend.email as emailInterceptor;
 
 import ballerina/http;
 import ballerina/log;
@@ -19,7 +19,7 @@ public function getUserService() returns http:Service {
     return service object {
         resource function get sayHello(http:Caller caller, http:Request req) returns error? {
 
-            boolean|error isValid = authUtils:authenticate(req);
+            boolean|error isValid = authInterceptor:authenticate(req);
             if isValid is error || !isValid {
                 http:Response res = new;
                 res.statusCode = 401;
@@ -38,7 +38,7 @@ public function getUserService() returns http:Service {
 
             http:Response response = new;
 
-            boolean|error isValid = authUtils:authenticate(req);
+            boolean|error isValid = authInterceptor:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
@@ -104,7 +104,7 @@ public function getUserService() returns http:Service {
                 }
 
                 // Use the imported email function
-                emailUtils:UserRegistrationEmailParams emailParams = {
+                emailInterceptor:UserRegistrationEmailParams emailParams = {
                     recipientEmail: email,
                     firstName: firstName,
                     userId: id
@@ -112,7 +112,7 @@ public function getUserService() returns http:Service {
 
                 string message = "User created successfully";
 
-                boolean|error emailSent = emailUtils:sendUserRegistrationEmail(emailParams);
+                boolean|error emailSent = emailInterceptor:sendUserRegistrationEmail(emailParams);
                 if emailSent is error {
                     message = message + ". Email failed: " + emailSent.message();
                 } else {
@@ -139,7 +139,7 @@ public function getUserService() returns http:Service {
 
             http:Response response = new;
 
-            boolean|error isValid = authUtils:authenticate(req);
+            boolean|error isValid = authInterceptor:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
@@ -200,7 +200,7 @@ public function getUserService() returns http:Service {
         resource function get user/[string id](http:Caller caller, http:Request req, @http:Header string authorization) returns http:Ok & readonly|error? {
             http:Response response = new;
 
-            boolean|error isValid = authUtils:authenticate(req);
+            boolean|error isValid = authInterceptor:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
@@ -232,7 +232,7 @@ public function getUserService() returns http:Service {
         resource function delete user/[string id](http:Caller caller, http:Request req, @http:Header string authorization) returns http:Ok & readonly|error? {
             http:Response response = new;
 
-            boolean|error isValid = authUtils:authenticate(req);
+            boolean|error isValid = authInterceptor:authenticate(req);
             if isValid is error || !isValid {
                 response.statusCode = 401;
                 response.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
