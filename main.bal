@@ -14,6 +14,7 @@ listener http:Listener httpListener = new (9090);
 public function main() returns error? {
 
     check executeSqlScript();
+
     check httpListener.attach(users:getUserService(), "api/v1");
 
     check httpListener.start();

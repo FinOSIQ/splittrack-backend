@@ -1,10 +1,12 @@
 import splittrack_backend.db;
-import splittrack_backend.interceptor as authInterceptor;
 import splittrack_backend.email as emailInterceptor;
+import splittrack_backend.interceptor as authInterceptor;
+import splittrack_backend.utils as id_store_util;
 
 import ballerina/http;
 import ballerina/log;
 import ballerina/persist;
+import ballerina/io;
 
 final db:Client dbClient = check new ();
 
@@ -19,14 +21,40 @@ public function getUserService() returns http:Service {
     return service object {
         resource function get sayHello(http:Caller caller, http:Request req) returns error? {
 
-            boolean|error isValid = authInterceptor:authenticate(req);
-            if isValid is error || !isValid {
-                http:Response res = new;
-                res.statusCode = 401;
-                res.setPayload({"error": "Unauthorized", "message": "Invalid or expired token"});
-                check caller->respond(res);
-                return;
+            io:println("Hello from the user service");
+            
+            string stringResult = check id_store_util:generateUniqueExpenseId();
+            io:println(`${stringResult}`);
+
+            boolean booleanResult = id_store_util:storeId(stringResult);
+            io:println(`${booleanResult.toString()}`);
+
+            string[] listResult = id_store_util:getAllIds();
+            if listResult.length() > 0 {
+                foreach var id in listResult {
+                    io:println("ID: " + id);
+                }
+            } else {
+                io:println("No IDs found");
             }
+
+            io:println("\n\n");
+
+            string stringResult2 = check id_store_util:generateUniqueExpenseId();
+            io:println(`${stringResult2}`);
+
+            boolean booleanResult2 = id_store_util:storeId(stringResult2);
+            io:println(`${booleanResult2.toString()}`);
+
+            string[] listResult2 = id_store_util:getAllIds();
+            if listResult2.length() > 0 {
+                foreach var id in listResult {
+                    io:println("ID: " + id);
+                }
+            } else {
+                io:println("No IDs found");
+            }
+
             http:Response res = new;
             res.setPayload({"message": "Hello from authenticated endpoint"});
             check caller->respond(res);

@@ -348,12 +348,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friendrequests/[int friend_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friendrequests/[string friend_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post friendrequests(FriendRequestInsert[] data) returns int[]|persist:Error {
+    isolated resource function post friendrequests(FriendRequestInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
@@ -363,7 +363,7 @@ public isolated client class Client {
             select inserted.friend_Id;
     }
 
-    isolated resource function put friendrequests/[int friend_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
+    isolated resource function put friendrequests/[string friend_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
@@ -372,7 +372,7 @@ public isolated client class Client {
         return self->/friendrequests/[friend_Id].get();
     }
 
-    isolated resource function delete friendrequests/[int friend_Id]() returns FriendRequest|persist:Error {
+    isolated resource function delete friendrequests/[string friend_Id]() returns FriendRequest|persist:Error {
         FriendRequest result = check self->/friendrequests/[friend_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -387,12 +387,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friends/[int friend_Id](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friends/[string friend_Id](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post friends(FriendInsert[] data) returns int[]|persist:Error {
+    isolated resource function post friends(FriendInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
@@ -402,7 +402,7 @@ public isolated client class Client {
             select inserted.friend_Id;
     }
 
-    isolated resource function put friends/[int friend_Id](FriendUpdate value) returns Friend|persist:Error {
+    isolated resource function put friends/[string friend_Id](FriendUpdate value) returns Friend|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
@@ -411,7 +411,7 @@ public isolated client class Client {
         return self->/friends/[friend_Id].get();
     }
 
-    isolated resource function delete friends/[int friend_Id]() returns Friend|persist:Error {
+    isolated resource function delete friends/[string friend_Id]() returns Friend|persist:Error {
         Friend result = check self->/friends/[friend_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -426,12 +426,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroups/[int group_Id](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroups/[string group_Id](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post usergroups(UserGroupInsert[] data) returns int[]|persist:Error {
+    isolated resource function post usergroups(UserGroupInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
@@ -441,7 +441,7 @@ public isolated client class Client {
             select inserted.group_Id;
     }
 
-    isolated resource function put usergroups/[int group_Id](UserGroupUpdate value) returns UserGroup|persist:Error {
+    isolated resource function put usergroups/[string group_Id](UserGroupUpdate value) returns UserGroup|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
@@ -450,7 +450,7 @@ public isolated client class Client {
         return self->/usergroups/[group_Id].get();
     }
 
-    isolated resource function delete usergroups/[int group_Id]() returns UserGroup|persist:Error {
+    isolated resource function delete usergroups/[string group_Id]() returns UserGroup|persist:Error {
         UserGroup result = check self->/usergroups/[group_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -465,12 +465,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroupmembers/[int group_member_Id](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroupmembers/[string group_member_Id](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post usergroupmembers(UserGroupMemberInsert[] data) returns int[]|persist:Error {
+    isolated resource function post usergroupmembers(UserGroupMemberInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
@@ -480,7 +480,7 @@ public isolated client class Client {
             select inserted.group_member_Id;
     }
 
-    isolated resource function put usergroupmembers/[int group_member_Id](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
+    isolated resource function put usergroupmembers/[string group_member_Id](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
@@ -489,7 +489,7 @@ public isolated client class Client {
         return self->/usergroupmembers/[group_member_Id].get();
     }
 
-    isolated resource function delete usergroupmembers/[int group_member_Id]() returns UserGroupMember|persist:Error {
+    isolated resource function delete usergroupmembers/[string group_member_Id]() returns UserGroupMember|persist:Error {
         UserGroupMember result = check self->/usergroupmembers/[group_member_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -504,12 +504,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenses/[int expense_Id](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenses/[string expense_Id](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post expenses(ExpenseInsert[] data) returns int[]|persist:Error {
+    isolated resource function post expenses(ExpenseInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
@@ -519,7 +519,7 @@ public isolated client class Client {
             select inserted.expense_Id;
     }
 
-    isolated resource function put expenses/[int expense_Id](ExpenseUpdate value) returns Expense|persist:Error {
+    isolated resource function put expenses/[string expense_Id](ExpenseUpdate value) returns Expense|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
@@ -528,7 +528,7 @@ public isolated client class Client {
         return self->/expenses/[expense_Id].get();
     }
 
-    isolated resource function delete expenses/[int expense_Id]() returns Expense|persist:Error {
+    isolated resource function delete expenses/[string expense_Id]() returns Expense|persist:Error {
         Expense result = check self->/expenses/[expense_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -543,12 +543,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenseparticipants/[int participant_Id](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenseparticipants/[string participant_Id](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post expenseparticipants(ExpenseParticipantInsert[] data) returns int[]|persist:Error {
+    isolated resource function post expenseparticipants(ExpenseParticipantInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
@@ -558,7 +558,7 @@ public isolated client class Client {
             select inserted.participant_Id;
     }
 
-    isolated resource function put expenseparticipants/[int participant_Id](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
+    isolated resource function put expenseparticipants/[string participant_Id](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
@@ -567,7 +567,7 @@ public isolated client class Client {
         return self->/expenseparticipants/[participant_Id].get();
     }
 
-    isolated resource function delete expenseparticipants/[int participant_Id]() returns ExpenseParticipant|persist:Error {
+    isolated resource function delete expenseparticipants/[string participant_Id]() returns ExpenseParticipant|persist:Error {
         ExpenseParticipant result = check self->/expenseparticipants/[participant_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -582,12 +582,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get transactions/[int transaction_Id](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get transactions/[string transaction_Id](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post transactions(TransactionInsert[] data) returns int[]|persist:Error {
+    isolated resource function post transactions(TransactionInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
@@ -597,7 +597,7 @@ public isolated client class Client {
             select inserted.transaction_Id;
     }
 
-    isolated resource function put transactions/[int transaction_Id](TransactionUpdate value) returns Transaction|persist:Error {
+    isolated resource function put transactions/[string transaction_Id](TransactionUpdate value) returns Transaction|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
@@ -606,7 +606,7 @@ public isolated client class Client {
         return self->/transactions/[transaction_Id].get();
     }
 
-    isolated resource function delete transactions/[int transaction_Id]() returns Transaction|persist:Error {
+    isolated resource function delete transactions/[string transaction_Id]() returns Transaction|persist:Error {
         Transaction result = check self->/transactions/[transaction_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -621,12 +621,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get bankaccounts/[int account_Id](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get bankaccounts/[string account_Id](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post bankaccounts(BankAccountInsert[] data) returns int[]|persist:Error {
+    isolated resource function post bankaccounts(BankAccountInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
@@ -636,7 +636,7 @@ public isolated client class Client {
             select inserted.account_Id;
     }
 
-    isolated resource function put bankaccounts/[int account_Id](BankAccountUpdate value) returns BankAccount|persist:Error {
+    isolated resource function put bankaccounts/[string account_Id](BankAccountUpdate value) returns BankAccount|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
@@ -645,7 +645,7 @@ public isolated client class Client {
         return self->/bankaccounts/[account_Id].get();
     }
 
-    isolated resource function delete bankaccounts/[int account_Id]() returns BankAccount|persist:Error {
+    isolated resource function delete bankaccounts/[string account_Id]() returns BankAccount|persist:Error {
         BankAccount result = check self->/bankaccounts/[account_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -660,12 +660,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get cards/[int card_Id](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get cards/[string card_Id](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post cards(CardInsert[] data) returns int[]|persist:Error {
+    isolated resource function post cards(CardInsert[] data) returns string[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
@@ -675,7 +675,7 @@ public isolated client class Client {
             select inserted.card_Id;
     }
 
-    isolated resource function put cards/[int card_Id](CardUpdate value) returns Card|persist:Error {
+    isolated resource function put cards/[string card_Id](CardUpdate value) returns Card|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
@@ -684,7 +684,7 @@ public isolated client class Client {
         return self->/cards/[card_Id].get();
     }
 
-    isolated resource function delete cards/[int card_Id]() returns Card|persist:Error {
+    isolated resource function delete cards/[string card_Id]() returns Card|persist:Error {
         Card result = check self->/cards/[card_Id].get();
         psql:SQLClient sqlClient;
         lock {

@@ -17,34 +17,34 @@ public type User record {|
 |};
 
 public type FriendRequest record {|
-    readonly int friend_Id;
+    readonly string friend_Id;
     User send_user_Id;
     int receive_user_Id;
     string status;
 |};
 
 public type Friend record {|
-    readonly int friend_Id;
+    readonly string friend_Id;
     User user_Id_1;
     User user_Id_2;
 |};
 
 public type UserGroup record {|
-    readonly int group_Id;
+    readonly string group_Id;
     string name;
     UserGroupMember[] groupMembers;
     Expense[] expenses;
 |};
 
 public type UserGroupMember record {|
-    readonly int group_member_Id;
+    readonly string group_member_Id;
     string member_role;
     UserGroup group;
     User user;
 |};
 
 public type Expense record {|
-    readonly int expense_Id;
+    readonly string expense_Id;
     string name;
     decimal total_amount;
     ExpenseParticipant[] expenseParticipants;
@@ -53,7 +53,7 @@ public type Expense record {|
 |};
 
 public type ExpenseParticipant record {|
-    readonly int participant_Id;
+    readonly string participant_Id;
     string participant_role;
     decimal owning_amount;
     Expense expense;
@@ -61,7 +61,7 @@ public type ExpenseParticipant record {|
 |};
 
 public type Transaction record {|
-    readonly int transaction_Id;
+    readonly string transaction_Id;
     decimal payed_amount;
 	Expense expense;
 	User payee_Id;
@@ -69,7 +69,7 @@ public type Transaction record {|
 
 
 public type BankAccount record {|
-    readonly int account_Id;
+    readonly string account_Id;
     string account_no;
     string bank;
     string branch;
@@ -77,7 +77,7 @@ public type BankAccount record {|
 |};
 
 public type Card record {|
-    readonly int card_Id;
+    readonly string card_Id;
     string card_no;
     string card_name;
     string card_expiry;
