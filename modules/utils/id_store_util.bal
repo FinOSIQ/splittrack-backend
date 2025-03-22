@@ -6,20 +6,21 @@ import ballerina/uuid;
 
 final db:Client dbClient = check new ();
 
-map<string> idStore = {};
+string[] idStore = [];
 
 public function storeId(string id) returns boolean {
-    idStore[id] = id;
+    idStore.push(id);
     return true;
 }
 
 public function getAllIds() returns string[] {
-    return idStore.keys();
+    return idStore;
 }
 
 public function checkAndRemoveId(string id) returns string {
-    if idStore.hasKey(id) {
-        _ = idStore.remove(id);
+    int? index = idStore.indexOf(id);
+    if index is int {
+        _ = idStore.remove(index);
         return "ID deleted successfully.";
     } else {
         return "ID doesn’t exist.";
@@ -33,24 +34,20 @@ public function generateUniqueExpenseId() returns string|error {
     while (!isUnique) {
         newId = uuid:createType4AsString();
 
-        if idStore.hasKey(newId) {
-            continue; 
+        if idStore.indexOf(newId) is int {
+            continue;
         }
 
         db:Expense|persist:Error expense = dbClient->/expenses/[newId];
         if expense is persist:NotFoundError {
             isUnique = true;
+            return newId;
         } else if expense is persist:Error {
             log:printError("Database error while checking expense ID: " + expense.message());
             return expense;
         } else {
             continue;
         }
-    }
-
-    boolean status = storeId(newId);
-    if (status) {
-        return newId;
     }
 
     return "Error Creating Unique ID";

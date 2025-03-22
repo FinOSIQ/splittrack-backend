@@ -1,12 +1,12 @@
 import splittrack_backend.db;
 import splittrack_backend.email as emailInterceptor;
 import splittrack_backend.interceptor as authInterceptor;
-import splittrack_backend.utils as id_store_util;
+// import splittrack_backend.utils as id_store_util;
 
 import ballerina/http;
+import ballerina/io;
 import ballerina/log;
 import ballerina/persist;
-import ballerina/io;
 
 final db:Client dbClient = check new ();
 
@@ -22,38 +22,22 @@ public function getUserService() returns http:Service {
         resource function get sayHello(http:Caller caller, http:Request req) returns error? {
 
             io:println("Hello from the user service");
-            
-            string stringResult = check id_store_util:generateUniqueExpenseId();
-            io:println(`${stringResult}`);
 
-            boolean booleanResult = id_store_util:storeId(stringResult);
-            io:println(`${booleanResult.toString()}`);
+            // string stringResult = check id_store_util:generateUniqueExpenseId();
+            // io:println(`${stringResult}`);
 
-            string[] listResult = id_store_util:getAllIds();
-            if listResult.length() > 0 {
-                foreach var id in listResult {
-                    io:println("ID: " + id);
-                }
-            } else {
-                io:println("No IDs found");
-            }
+            // boolean booleanResult = id_store_util:storeId(stringResult);
+            // io:println(`${booleanResult.toString()}`);
 
-            io:println("\n\n");
-
-            string stringResult2 = check id_store_util:generateUniqueExpenseId();
-            io:println(`${stringResult2}`);
-
-            boolean booleanResult2 = id_store_util:storeId(stringResult2);
-            io:println(`${booleanResult2.toString()}`);
-
-            string[] listResult2 = id_store_util:getAllIds();
-            if listResult2.length() > 0 {
-                foreach var id in listResult {
-                    io:println("ID: " + id);
-                }
-            } else {
-                io:println("No IDs found");
-            }
+            // string[] listResult = id_store_util:getAllIds();
+            // io:println(listResult.length());
+            // if listResult.length() >= 0 {
+            //     foreach var id in listResult {
+            //         io:println("ID: " + id);
+            //     }
+            // } else {
+            //     io:println("No IDs found");
+            // }
 
             http:Response res = new;
             res.setPayload({"message": "Hello from authenticated endpoint"});
