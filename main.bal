@@ -1,4 +1,6 @@
+// import splittrack_backend.db;
 
+// import ballerina/sql;
 import splittrack_backend.db_scripts as generator;
 import splittrack_backend.db_scripts as db_setup;
 import splittrack_backend.users;
@@ -6,12 +8,14 @@ import splittrack_backend.users;
 import ballerina/http;
 import ballerina/io;
 
+// Configure the main listener
 listener http:Listener httpListener = new (9090);
 
 public function main() returns error? {
 
     check executeSqlScript();
-    check httpListener.attach(users:getUserService(), "/users");
+
+    check httpListener.attach(users:getUserService(), "api/v1");
 
     check httpListener.start();
 }

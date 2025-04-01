@@ -11,8 +11,11 @@ public function generateDbSetup() returns error? {
     string filteredContent = "";
     foreach var line in lines {
         string trimmedLine = line.trim();
-        if trimmedLine != "" && !trimmedLine.startsWith("--") {
-            filteredContent += trimmedLine + "\n";
+        // Skip empty lines, comments, and lines containing "DROP"
+        if trimmedLine != "" && !trimmedLine.startsWith("--") && !regex:matches(trimmedLine, ".*DROP.*") {
+            // Replace "CREATE TABLE" with "CREATE TABLE IF NOT EXISTS"
+            string modifiedLine = regex:replaceAll(trimmedLine, "CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
+            filteredContent += modifiedLine + "\n";
         }
     }
 
