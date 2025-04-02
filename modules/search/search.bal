@@ -1,4 +1,3 @@
-// TODO: revisit the friends logic.....
 
 
 import ballerina/http;
