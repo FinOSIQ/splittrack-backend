@@ -17,7 +17,7 @@ public type User record {|
 |};
 
 public type FriendRequest record {|
-    readonly int friend_Id;
+    readonly int friendRequest_Id;
     User send_user_Id;
     int receive_user_Id;
     string status;
@@ -84,3 +84,5 @@ public type Card record {|
     string card_cv;
     BankAccount bankAccount;
 |};
+
+// Get-Content "modules\db\script.sql" | & "C:\xampp\mysql\bin\mysql.exe" -u root -p splittrack

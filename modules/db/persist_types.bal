@@ -48,14 +48,14 @@ public type UserUpdate record {|
 |};
 
 public type FriendRequest record {|
-    readonly int friend_Id;
+    readonly int friendRequest_Id;
     int send_user_idUser_Id;
     int receive_user_Id;
     string status;
 |};
 
 public type FriendRequestOptionalized record {|
-    int friend_Id?;
+    int friendRequest_Id?;
     int send_user_idUser_Id?;
     int receive_user_Id?;
     string status?;

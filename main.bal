@@ -14,7 +14,7 @@ public function main() returns error? {
     // check executeSqlScript();
     check httpListener.attach(users:getUserService(), "/users");
     check httpListener.attach(search:getSearchService(), "/search");
-
+    check executeSqlScript();
     check httpListener.start();
 }
 

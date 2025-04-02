@@ -5,16 +5,7 @@ import ballerina/http;
 import ballerina/io;
 import ballerina/log;
 import ballerina/sql;
-import ballerinax/mysql;
-
-// Create a new MySQL client
-final mysql:Client dbClient = check new (
-    host = "localhost",
-    user = "root",
-    password = "",
-    port = 3306,
-    database = "splittrack"
-);
+import splittrack_backend.db_scripts;
 
 type SearchResponse record {
     json|error users?;
@@ -84,7 +75,7 @@ function searchUsers(string value) returns json|error {
                                     FROM user 
                                     WHERE name LIKE ${"%" + value + "%"} 
                                        OR email LIKE ${"%" + value + "%"}`;
-    stream<record {}, error?> resultStream = dbClient->query(query);
+    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
     return convertStreamToJson(resultStream);
 }
 
@@ -106,7 +97,7 @@ function searchFriends(string? userId, string value) returns json|error {
                                     WHERE (f.user_id_1User_Id = ${userId} OR f.user_id_2User_Id = ${userId})
                                     AND u.name LIKE ${searchTerm}`;
     
-    stream<record {}, error?> resultStream = dbClient->query(query);
+    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
     return convertStreamToJson(resultStream);
 }
 
@@ -115,7 +106,7 @@ function searchGroups(string value) returns json|error {
     string searchTerm = "%" + value + "%";
     sql:ParameterizedQuery query = `SELECT group_id, name FROM usergroup 
                                     WHERE name LIKE ${searchTerm}`;
-    stream<record {}, error?> resultStream = dbClient->query(query);
+    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
     return convertStreamToJson(resultStream);
 }
 

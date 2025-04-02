@@ -40,7 +40,7 @@ public isolated client class Client {
                 user_type: {columnName: "user_type"},
                 phone_no: {columnName: "phone_no"},
                 currency_pref: {columnName: "currency_pref"},
-                "friendRequests[].friend_Id": {relation: {entityName: "friendRequests", refField: "friend_Id"}},
+                "friendRequests[].friendRequest_Id": {relation: {entityName: "friendRequests", refField: "friendRequest_Id"}},
                 "friendRequests[].send_user_idUser_Id": {relation: {entityName: "friendRequests", refField: "send_user_idUser_Id"}},
                 "friendRequests[].receive_user_Id": {relation: {entityName: "friendRequests", refField: "receive_user_Id"}},
                 "friendRequests[].status": {relation: {entityName: "friendRequests", refField: "status"}},
@@ -78,7 +78,7 @@ public isolated client class Client {
             entityName: "FriendRequest",
             tableName: "FriendRequest",
             fieldMetadata: {
-                friend_Id: {columnName: "friend_Id"},
+                friendRequest_Id: {columnName: "friendRequest_Id"},
                 send_user_idUser_Id: {columnName: "send_user_idUser_Id"},
                 receive_user_Id: {columnName: "receive_user_Id"},
                 status: {columnName: "status"},
@@ -90,7 +90,7 @@ public isolated client class Client {
                 "send_user_Id.phone_no": {relation: {entityName: "send_user_Id", refField: "phone_no"}},
                 "send_user_Id.currency_pref": {relation: {entityName: "send_user_Id", refField: "currency_pref"}}
             },
-            keyFields: ["friend_Id"],
+            keyFields: ["friendRequest_Id"],
             joinMetadata: {send_user_Id: {entity: User, fieldName: "send_user_Id", refTable: "User", refColumns: ["user_Id"], joinColumns: ["send_user_idUser_Id"], 'type: psql:ONE_TO_MANY}}
         },
         [FRIEND]: {
@@ -348,7 +348,7 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friendrequests/[int friend_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friendrequests/[int friendRequest_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
@@ -360,25 +360,25 @@ public isolated client class Client {
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from FriendRequestInsert inserted in data
-            select inserted.friend_Id;
+            select inserted.friendRequest_Id;
     }
 
-    isolated resource function put friendrequests/[int friend_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
+    isolated resource function put friendrequests/[int friendRequest_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
         }
-        _ = check sqlClient.runUpdateQuery(friend_Id, value);
-        return self->/friendrequests/[friend_Id].get();
+        _ = check sqlClient.runUpdateQuery(friendRequest_Id, value);
+        return self->/friendrequests/[friendRequest_Id].get();
     }
 
-    isolated resource function delete friendrequests/[int friend_Id]() returns FriendRequest|persist:Error {
-        FriendRequest result = check self->/friendrequests/[friend_Id].get();
+    isolated resource function delete friendrequests/[int friendRequest_Id]() returns FriendRequest|persist:Error {
+        FriendRequest result = check self->/friendrequests/[friendRequest_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
         }
-        _ = check sqlClient.runDeleteQuery(friend_Id);
+        _ = check sqlClient.runDeleteQuery(friendRequest_Id);
         return result;
     }
 

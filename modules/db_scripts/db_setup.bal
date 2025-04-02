@@ -55,12 +55,12 @@ FOREIGN KEY(userUser_Id) REFERENCES User(user_Id),
 PRIMARY KEY(group_member_Id)
 )`;
 sql:ParameterizedQuery query16 = `CREATE TABLE FriendRequest (
-friend_Id INT NOT NULL,
+friendRequest_Id INT NOT NULL,
 receive_user_Id INT NOT NULL,
 status VARCHAR(191) NOT NULL,
 send_user_idUser_Id INT NOT NULL,
 FOREIGN KEY(send_user_idUser_Id) REFERENCES User(user_Id),
-PRIMARY KEY(friend_Id)
+PRIMARY KEY(friendRequest_Id)
 )`;
 sql:ParameterizedQuery query17 = `CREATE TABLE Expense (
 expense_Id INT NOT NULL,

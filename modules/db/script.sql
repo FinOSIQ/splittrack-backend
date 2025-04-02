@@ -61,12 +61,12 @@ CREATE TABLE `UserGroupMember` (
 );
 
 CREATE TABLE `FriendRequest` (
-	`friend_Id` INT NOT NULL,
+	`friendRequest_Id` INT NOT NULL,
 	`receive_user_Id` INT NOT NULL,
 	`status` VARCHAR(191) NOT NULL,
 	`send_user_idUser_Id` INT NOT NULL,
 	FOREIGN KEY(`send_user_idUser_Id`) REFERENCES `User`(`user_Id`),
-	PRIMARY KEY(`friend_Id`)
+	PRIMARY KEY(`friendRequest_Id`)
 );
 
 CREATE TABLE `Expense` (
