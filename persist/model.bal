@@ -1,15 +1,12 @@
 import ballerina/persist as _;
 
 public type User record {|
-
-    readonly int user_Id;
+    readonly string user_Id;
     string email;
-    string password;
-    string name;
-    string user_type;
-    string phone_no;
-
-
+    string first_name;
+    string last_name;
+    string phone_number;
+    string birthdate;
     string currency_pref;
     FriendRequest[] friendRequests;
     UserGroupMember[] groupMembers;
@@ -20,43 +17,34 @@ public type User record {|
 |};
 
 public type FriendRequest record {|
-
-    readonly int friendRequest_Id;
-
+    readonly string friendRequest_Id;
     User send_user_Id;
     int receive_user_Id;
     string status;
 |};
 
 public type Friend record {|
-
-    readonly int friend_Id;
-
+    readonly string friend_Id;
     User user_Id_1;
     User user_Id_2;
 |};
 
 public type UserGroup record {|
-
- readonly string group_Id;
+    readonly string group_Id;
     string name;
     UserGroupMember[] groupMembers;
     Expense[] expenses;
 |};
 
 public type UserGroupMember record {|
-
     readonly string group_member_Id;
-
     string member_role;
     UserGroup group;
     User user;
 |};
 
 public type Expense record {|
-
     readonly string expense_Id;
-
     string name;
     decimal total_amount;
     ExpenseParticipant[] expenseParticipants;
@@ -65,9 +53,7 @@ public type Expense record {|
 |};
 
 public type ExpenseParticipant record {|
-
     readonly string participant_Id;
-
     string participant_role;
     decimal owning_amount;
     Expense expense;
@@ -75,9 +61,7 @@ public type ExpenseParticipant record {|
 |};
 
 public type Transaction record {|
-
     readonly string transaction_Id;
-
     decimal payed_amount;
 	Expense expense;
 	User payee_Id;
@@ -85,9 +69,7 @@ public type Transaction record {|
 
 
 public type BankAccount record {|
-
     readonly string account_Id;
-
     string account_no;
     string bank;
     string branch;
@@ -95,14 +77,10 @@ public type BankAccount record {|
 |};
 
 public type Card record {|
-
     readonly string card_Id;
-
     string card_no;
     string card_name;
     string card_expiry;
     string card_cv;
     BankAccount bankAccount;
 |};
-// Get-Content "modules\db\script.sql" | & "C:\xampp\mysql\bin\mysql.exe" -u root -p splittrack
-
