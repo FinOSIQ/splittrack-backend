@@ -1,3 +1,4 @@
+
 // AUTO-GENERATED FILE. DO NOT MODIFY.
 
 // This file is an auto-generated file by Ballerina persistence layer for model.
@@ -35,12 +36,12 @@ public isolated client class Client {
             fieldMetadata: {
                 user_Id: {columnName: "user_Id"},
                 email: {columnName: "email"},
-                first_name: {columnName: "first_name"},
-                last_name: {columnName: "last_name"},
-                phone_number: {columnName: "phone_number"},
-                birthdate: {columnName: "birthdate"},
+                password: {columnName: "password"},
+                name: {columnName: "name"},
+                user_type: {columnName: "user_type"},
+                phone_no: {columnName: "phone_no"},
                 currency_pref: {columnName: "currency_pref"},
-                "friendRequests[].friend_Id": {relation: {entityName: "friendRequests", refField: "friend_Id"}},
+                "friendRequests[].friendRequest_Id": {relation: {entityName: "friendRequests", refField: "friendRequest_Id"}},
                 "friendRequests[].send_user_idUser_Id": {relation: {entityName: "friendRequests", refField: "send_user_idUser_Id"}},
                 "friendRequests[].receive_user_Id": {relation: {entityName: "friendRequests", refField: "receive_user_Id"}},
                 "friendRequests[].status": {relation: {entityName: "friendRequests", refField: "status"}},
@@ -78,19 +79,19 @@ public isolated client class Client {
             entityName: "FriendRequest",
             tableName: "FriendRequest",
             fieldMetadata: {
-                friend_Id: {columnName: "friend_Id"},
+                friendRequest_Id: {columnName: "friendRequest_Id"},
                 send_user_idUser_Id: {columnName: "send_user_idUser_Id"},
                 receive_user_Id: {columnName: "receive_user_Id"},
                 status: {columnName: "status"},
                 "send_user_Id.user_Id": {relation: {entityName: "send_user_Id", refField: "user_Id"}},
                 "send_user_Id.email": {relation: {entityName: "send_user_Id", refField: "email"}},
-                "send_user_Id.first_name": {relation: {entityName: "send_user_Id", refField: "first_name"}},
-                "send_user_Id.last_name": {relation: {entityName: "send_user_Id", refField: "last_name"}},
-                "send_user_Id.phone_number": {relation: {entityName: "send_user_Id", refField: "phone_number"}},
-                "send_user_Id.birthdate": {relation: {entityName: "send_user_Id", refField: "birthdate"}},
+                "send_user_Id.password": {relation: {entityName: "send_user_Id", refField: "password"}},
+                "send_user_Id.name": {relation: {entityName: "send_user_Id", refField: "name"}},
+                "send_user_Id.user_type": {relation: {entityName: "send_user_Id", refField: "user_type"}},
+                "send_user_Id.phone_no": {relation: {entityName: "send_user_Id", refField: "phone_no"}},
                 "send_user_Id.currency_pref": {relation: {entityName: "send_user_Id", refField: "currency_pref"}}
             },
-            keyFields: ["friend_Id"],
+            keyFields: ["friendRequest_Id"],
             joinMetadata: {send_user_Id: {entity: User, fieldName: "send_user_Id", refTable: "User", refColumns: ["user_Id"], joinColumns: ["send_user_idUser_Id"], 'type: psql:ONE_TO_MANY}}
         },
         [FRIEND]: {
@@ -102,17 +103,17 @@ public isolated client class Client {
                 user_id_2User_Id: {columnName: "user_id_2User_Id"},
                 "user_Id_1.user_Id": {relation: {entityName: "user_Id_1", refField: "user_Id"}},
                 "user_Id_1.email": {relation: {entityName: "user_Id_1", refField: "email"}},
-                "user_Id_1.first_name": {relation: {entityName: "user_Id_1", refField: "first_name"}},
-                "user_Id_1.last_name": {relation: {entityName: "user_Id_1", refField: "last_name"}},
-                "user_Id_1.phone_number": {relation: {entityName: "user_Id_1", refField: "phone_number"}},
-                "user_Id_1.birthdate": {relation: {entityName: "user_Id_1", refField: "birthdate"}},
+                "user_Id_1.password": {relation: {entityName: "user_Id_1", refField: "password"}},
+                "user_Id_1.name": {relation: {entityName: "user_Id_1", refField: "name"}},
+                "user_Id_1.user_type": {relation: {entityName: "user_Id_1", refField: "user_type"}},
+                "user_Id_1.phone_no": {relation: {entityName: "user_Id_1", refField: "phone_no"}},
                 "user_Id_1.currency_pref": {relation: {entityName: "user_Id_1", refField: "currency_pref"}},
                 "user_Id_2.user_Id": {relation: {entityName: "user_Id_2", refField: "user_Id"}},
                 "user_Id_2.email": {relation: {entityName: "user_Id_2", refField: "email"}},
-                "user_Id_2.first_name": {relation: {entityName: "user_Id_2", refField: "first_name"}},
-                "user_Id_2.last_name": {relation: {entityName: "user_Id_2", refField: "last_name"}},
-                "user_Id_2.phone_number": {relation: {entityName: "user_Id_2", refField: "phone_number"}},
-                "user_Id_2.birthdate": {relation: {entityName: "user_Id_2", refField: "birthdate"}},
+                "user_Id_2.password": {relation: {entityName: "user_Id_2", refField: "password"}},
+                "user_Id_2.name": {relation: {entityName: "user_Id_2", refField: "name"}},
+                "user_Id_2.user_type": {relation: {entityName: "user_Id_2", refField: "user_type"}},
+                "user_Id_2.phone_no": {relation: {entityName: "user_Id_2", refField: "phone_no"}},
                 "user_Id_2.currency_pref": {relation: {entityName: "user_Id_2", refField: "currency_pref"}}
             },
             keyFields: ["friend_Id"],
@@ -154,10 +155,10 @@ public isolated client class Client {
                 "group.name": {relation: {entityName: "group", refField: "name"}},
                 "user.user_Id": {relation: {entityName: "user", refField: "user_Id"}},
                 "user.email": {relation: {entityName: "user", refField: "email"}},
-                "user.first_name": {relation: {entityName: "user", refField: "first_name"}},
-                "user.last_name": {relation: {entityName: "user", refField: "last_name"}},
-                "user.phone_number": {relation: {entityName: "user", refField: "phone_number"}},
-                "user.birthdate": {relation: {entityName: "user", refField: "birthdate"}},
+                "user.password": {relation: {entityName: "user", refField: "password"}},
+                "user.name": {relation: {entityName: "user", refField: "name"}},
+                "user.user_type": {relation: {entityName: "user", refField: "user_type"}},
+                "user.phone_no": {relation: {entityName: "user", refField: "phone_no"}},
                 "user.currency_pref": {relation: {entityName: "user", refField: "currency_pref"}}
             },
             keyFields: ["group_member_Id"],
@@ -208,10 +209,10 @@ public isolated client class Client {
                 "expense.usergroupGroup_Id": {relation: {entityName: "expense", refField: "usergroupGroup_Id"}},
                 "user.user_Id": {relation: {entityName: "user", refField: "user_Id"}},
                 "user.email": {relation: {entityName: "user", refField: "email"}},
-                "user.first_name": {relation: {entityName: "user", refField: "first_name"}},
-                "user.last_name": {relation: {entityName: "user", refField: "last_name"}},
-                "user.phone_number": {relation: {entityName: "user", refField: "phone_number"}},
-                "user.birthdate": {relation: {entityName: "user", refField: "birthdate"}},
+                "user.password": {relation: {entityName: "user", refField: "password"}},
+                "user.name": {relation: {entityName: "user", refField: "name"}},
+                "user.user_type": {relation: {entityName: "user", refField: "user_type"}},
+                "user.phone_no": {relation: {entityName: "user", refField: "phone_no"}},
                 "user.currency_pref": {relation: {entityName: "user", refField: "currency_pref"}}
             },
             keyFields: ["participant_Id"],
@@ -234,10 +235,10 @@ public isolated client class Client {
                 "expense.usergroupGroup_Id": {relation: {entityName: "expense", refField: "usergroupGroup_Id"}},
                 "payee_Id.user_Id": {relation: {entityName: "payee_Id", refField: "user_Id"}},
                 "payee_Id.email": {relation: {entityName: "payee_Id", refField: "email"}},
-                "payee_Id.first_name": {relation: {entityName: "payee_Id", refField: "first_name"}},
-                "payee_Id.last_name": {relation: {entityName: "payee_Id", refField: "last_name"}},
-                "payee_Id.phone_number": {relation: {entityName: "payee_Id", refField: "phone_number"}},
-                "payee_Id.birthdate": {relation: {entityName: "payee_Id", refField: "birthdate"}},
+                "payee_Id.password": {relation: {entityName: "payee_Id", refField: "password"}},
+                "payee_Id.name": {relation: {entityName: "payee_Id", refField: "name"}},
+                "payee_Id.user_type": {relation: {entityName: "payee_Id", refField: "user_type"}},
+                "payee_Id.phone_no": {relation: {entityName: "payee_Id", refField: "phone_no"}},
                 "payee_Id.currency_pref": {relation: {entityName: "payee_Id", refField: "currency_pref"}}
             },
             keyFields: ["transaction_Id"],
@@ -309,12 +310,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get users/[string user_Id](UserTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get users/[int user_Id](UserTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post users(UserInsert[] data) returns string[]|persist:Error {
+    isolated resource function post users(UserInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER);
@@ -324,7 +325,7 @@ public isolated client class Client {
             select inserted.user_Id;
     }
 
-    isolated resource function put users/[string user_Id](UserUpdate value) returns User|persist:Error {
+    isolated resource function put users/[int user_Id](UserUpdate value) returns User|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER);
@@ -333,7 +334,7 @@ public isolated client class Client {
         return self->/users/[user_Id].get();
     }
 
-    isolated resource function delete users/[string user_Id]() returns User|persist:Error {
+    isolated resource function delete users/[int user_Id]() returns User|persist:Error {
         User result = check self->/users/[user_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -348,37 +349,37 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friendrequests/[string friend_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friendrequests/[int friendRequest_Id](FriendRequestTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post friendrequests(FriendRequestInsert[] data) returns string[]|persist:Error {
+    isolated resource function post friendrequests(FriendRequestInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
         }
         _ = check sqlClient.runBatchInsertQuery(data);
         return from FriendRequestInsert inserted in data
-            select inserted.friend_Id;
+            select inserted.friendRequest_Id;
     }
 
-    isolated resource function put friendrequests/[string friend_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
+    isolated resource function put friendrequests/[int friendRequest_Id](FriendRequestUpdate value) returns FriendRequest|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
         }
-        _ = check sqlClient.runUpdateQuery(friend_Id, value);
-        return self->/friendrequests/[friend_Id].get();
+        _ = check sqlClient.runUpdateQuery(friendRequest_Id, value);
+        return self->/friendrequests/[friendRequest_Id].get();
     }
 
-    isolated resource function delete friendrequests/[string friend_Id]() returns FriendRequest|persist:Error {
-        FriendRequest result = check self->/friendrequests/[friend_Id].get();
+    isolated resource function delete friendrequests/[int friendRequest_Id]() returns FriendRequest|persist:Error {
+        FriendRequest result = check self->/friendrequests/[friendRequest_Id].get();
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND_REQUEST);
         }
-        _ = check sqlClient.runDeleteQuery(friend_Id);
+        _ = check sqlClient.runDeleteQuery(friendRequest_Id);
         return result;
     }
 
@@ -387,12 +388,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get friends/[string friend_Id](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get friends/[int friend_Id](FriendTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post friends(FriendInsert[] data) returns string[]|persist:Error {
+    isolated resource function post friends(FriendInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
@@ -402,7 +403,7 @@ public isolated client class Client {
             select inserted.friend_Id;
     }
 
-    isolated resource function put friends/[string friend_Id](FriendUpdate value) returns Friend|persist:Error {
+    isolated resource function put friends/[int friend_Id](FriendUpdate value) returns Friend|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(FRIEND);
@@ -411,7 +412,7 @@ public isolated client class Client {
         return self->/friends/[friend_Id].get();
     }
 
-    isolated resource function delete friends/[string friend_Id]() returns Friend|persist:Error {
+    isolated resource function delete friends/[int friend_Id]() returns Friend|persist:Error {
         Friend result = check self->/friends/[friend_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -426,12 +427,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroups/[string group_Id](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroups/[int group_Id](UserGroupTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post usergroups(UserGroupInsert[] data) returns string[]|persist:Error {
+    isolated resource function post usergroups(UserGroupInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
@@ -441,7 +442,7 @@ public isolated client class Client {
             select inserted.group_Id;
     }
 
-    isolated resource function put usergroups/[string group_Id](UserGroupUpdate value) returns UserGroup|persist:Error {
+    isolated resource function put usergroups/[int group_Id](UserGroupUpdate value) returns UserGroup|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP);
@@ -450,7 +451,7 @@ public isolated client class Client {
         return self->/usergroups/[group_Id].get();
     }
 
-    isolated resource function delete usergroups/[string group_Id]() returns UserGroup|persist:Error {
+    isolated resource function delete usergroups/[int group_Id]() returns UserGroup|persist:Error {
         UserGroup result = check self->/usergroups/[group_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -465,12 +466,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get usergroupmembers/[string group_member_Id](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get usergroupmembers/[int group_member_Id](UserGroupMemberTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post usergroupmembers(UserGroupMemberInsert[] data) returns string[]|persist:Error {
+    isolated resource function post usergroupmembers(UserGroupMemberInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
@@ -480,7 +481,7 @@ public isolated client class Client {
             select inserted.group_member_Id;
     }
 
-    isolated resource function put usergroupmembers/[string group_member_Id](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
+    isolated resource function put usergroupmembers/[int group_member_Id](UserGroupMemberUpdate value) returns UserGroupMember|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(USER_GROUP_MEMBER);
@@ -489,7 +490,7 @@ public isolated client class Client {
         return self->/usergroupmembers/[group_member_Id].get();
     }
 
-    isolated resource function delete usergroupmembers/[string group_member_Id]() returns UserGroupMember|persist:Error {
+    isolated resource function delete usergroupmembers/[int group_member_Id]() returns UserGroupMember|persist:Error {
         UserGroupMember result = check self->/usergroupmembers/[group_member_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -504,12 +505,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenses/[string expense_Id](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenses/[int expense_Id](ExpenseTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post expenses(ExpenseInsert[] data) returns string[]|persist:Error {
+    isolated resource function post expenses(ExpenseInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
@@ -519,7 +520,7 @@ public isolated client class Client {
             select inserted.expense_Id;
     }
 
-    isolated resource function put expenses/[string expense_Id](ExpenseUpdate value) returns Expense|persist:Error {
+    isolated resource function put expenses/[int expense_Id](ExpenseUpdate value) returns Expense|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE);
@@ -528,7 +529,7 @@ public isolated client class Client {
         return self->/expenses/[expense_Id].get();
     }
 
-    isolated resource function delete expenses/[string expense_Id]() returns Expense|persist:Error {
+    isolated resource function delete expenses/[int expense_Id]() returns Expense|persist:Error {
         Expense result = check self->/expenses/[expense_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -543,12 +544,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get expenseparticipants/[string participant_Id](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get expenseparticipants/[int participant_Id](ExpenseParticipantTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post expenseparticipants(ExpenseParticipantInsert[] data) returns string[]|persist:Error {
+    isolated resource function post expenseparticipants(ExpenseParticipantInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
@@ -558,7 +559,7 @@ public isolated client class Client {
             select inserted.participant_Id;
     }
 
-    isolated resource function put expenseparticipants/[string participant_Id](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
+    isolated resource function put expenseparticipants/[int participant_Id](ExpenseParticipantUpdate value) returns ExpenseParticipant|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(EXPENSE_PARTICIPANT);
@@ -567,7 +568,7 @@ public isolated client class Client {
         return self->/expenseparticipants/[participant_Id].get();
     }
 
-    isolated resource function delete expenseparticipants/[string participant_Id]() returns ExpenseParticipant|persist:Error {
+    isolated resource function delete expenseparticipants/[int participant_Id]() returns ExpenseParticipant|persist:Error {
         ExpenseParticipant result = check self->/expenseparticipants/[participant_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -582,12 +583,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get transactions/[string transaction_Id](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get transactions/[int transaction_Id](TransactionTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post transactions(TransactionInsert[] data) returns string[]|persist:Error {
+    isolated resource function post transactions(TransactionInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
@@ -597,7 +598,7 @@ public isolated client class Client {
             select inserted.transaction_Id;
     }
 
-    isolated resource function put transactions/[string transaction_Id](TransactionUpdate value) returns Transaction|persist:Error {
+    isolated resource function put transactions/[int transaction_Id](TransactionUpdate value) returns Transaction|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(TRANSACTION);
@@ -606,7 +607,7 @@ public isolated client class Client {
         return self->/transactions/[transaction_Id].get();
     }
 
-    isolated resource function delete transactions/[string transaction_Id]() returns Transaction|persist:Error {
+    isolated resource function delete transactions/[int transaction_Id]() returns Transaction|persist:Error {
         Transaction result = check self->/transactions/[transaction_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -621,12 +622,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get bankaccounts/[string account_Id](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get bankaccounts/[int account_Id](BankAccountTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post bankaccounts(BankAccountInsert[] data) returns string[]|persist:Error {
+    isolated resource function post bankaccounts(BankAccountInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
@@ -636,7 +637,7 @@ public isolated client class Client {
             select inserted.account_Id;
     }
 
-    isolated resource function put bankaccounts/[string account_Id](BankAccountUpdate value) returns BankAccount|persist:Error {
+    isolated resource function put bankaccounts/[int account_Id](BankAccountUpdate value) returns BankAccount|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(BANK_ACCOUNT);
@@ -645,7 +646,7 @@ public isolated client class Client {
         return self->/bankaccounts/[account_Id].get();
     }
 
-    isolated resource function delete bankaccounts/[string account_Id]() returns BankAccount|persist:Error {
+    isolated resource function delete bankaccounts/[int account_Id]() returns BankAccount|persist:Error {
         BankAccount result = check self->/bankaccounts/[account_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -660,12 +661,12 @@ public isolated client class Client {
         name: "query"
     } external;
 
-    isolated resource function get cards/[string card_Id](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
+    isolated resource function get cards/[int card_Id](CardTargetType targetType = <>) returns targetType|persist:Error = @java:Method {
         'class: "io.ballerina.stdlib.persist.sql.datastore.MySQLProcessor",
         name: "queryOne"
     } external;
 
-    isolated resource function post cards(CardInsert[] data) returns string[]|persist:Error {
+    isolated resource function post cards(CardInsert[] data) returns int[]|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
@@ -675,7 +676,7 @@ public isolated client class Client {
             select inserted.card_Id;
     }
 
-    isolated resource function put cards/[string card_Id](CardUpdate value) returns Card|persist:Error {
+    isolated resource function put cards/[int card_Id](CardUpdate value) returns Card|persist:Error {
         psql:SQLClient sqlClient;
         lock {
             sqlClient = self.persistClients.get(CARD);
@@ -684,7 +685,7 @@ public isolated client class Client {
         return self->/cards/[card_Id].get();
     }
 
-    isolated resource function delete cards/[string card_Id]() returns Card|persist:Error {
+    isolated resource function delete cards/[int card_Id]() returns Card|persist:Error {
         Card result = check self->/cards/[card_Id].get();
         psql:SQLClient sqlClient;
         lock {
@@ -710,4 +711,5 @@ public isolated client class Client {
         return result;
     }
 }
+
 

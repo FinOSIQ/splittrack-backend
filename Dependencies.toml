@@ -451,9 +451,13 @@ modules = [
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db_scripts"},
-	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.email"},
+  {org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.email"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.interceptor"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.users"},
-	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.utils"}
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.utils"},
+  {org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.search"},
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.users"}
+
+
 ]
 
