@@ -3,6 +3,7 @@ import splittrack_backend.db;
 
 // Auto-generated file containing SQL queries from the persist SQL file
 
+
 sql:ParameterizedQuery query1 = `DROP TABLE IF EXISTS ExpenseParticipant`;
 sql:ParameterizedQuery query2 = `DROP TABLE IF EXISTS Friend`;
 sql:ParameterizedQuery query3 = `DROP TABLE IF EXISTS Transaction`;
@@ -20,11 +21,13 @@ PRIMARY KEY(group_Id)
 )`;
 sql:ParameterizedQuery query12 = `CREATE TABLE BankAccount (
 account_Id INT NOT NULL,
+
 account_no VARCHAR(191) NOT NULL,
 bank VARCHAR(191) NOT NULL,
 branch VARCHAR(191) NOT NULL,
 PRIMARY KEY(account_Id)
 )`;
+
 sql:ParameterizedQuery query13 = `CREATE TABLE User (
 user_Id INT NOT NULL,
 email VARCHAR(191) NOT NULL,
@@ -37,10 +40,14 @@ PRIMARY KEY(user_Id)
 )`;
 sql:ParameterizedQuery query14 = `CREATE TABLE Card (
 card_Id INT NOT NULL,
+=======
+
+
 card_no VARCHAR(191) NOT NULL,
 card_name VARCHAR(191) NOT NULL,
 card_expiry VARCHAR(191) NOT NULL,
 card_cv VARCHAR(191) NOT NULL,
+
 bankaccountAccount_Id INT NOT NULL,
 FOREIGN KEY(bankaccountAccount_Id) REFERENCES BankAccount(account_Id),
 PRIMARY KEY(card_Id)
@@ -94,6 +101,9 @@ owning_amount DECIMAL(65,30) NOT NULL,
 expenseExpense_Id INT NOT NULL,
 FOREIGN KEY(expenseExpense_Id) REFERENCES Expense(expense_Id),
 userUser_Id INT NOT NULL,
+
+
+
 FOREIGN KEY(userUser_Id) REFERENCES User(user_Id),
 PRIMARY KEY(participant_Id)
 )`;
@@ -110,15 +120,5 @@ public function createTables() returns error? {
  _ = check dbClient->executeNativeSQL(query8);
  _ = check dbClient->executeNativeSQL(query9);
  _ = check dbClient->executeNativeSQL(query10);
- _ = check dbClient->executeNativeSQL(query11);
- _ = check dbClient->executeNativeSQL(query12);
- _ = check dbClient->executeNativeSQL(query13);
- _ = check dbClient->executeNativeSQL(query14);
- _ = check dbClient->executeNativeSQL(query15);
- _ = check dbClient->executeNativeSQL(query16);
- _ = check dbClient->executeNativeSQL(query17);
- _ = check dbClient->executeNativeSQL(query18);
- _ = check dbClient->executeNativeSQL(query19);
- _ = check dbClient->executeNativeSQL(query20);
     check dbClient.close();
 }

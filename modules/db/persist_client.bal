@@ -1,3 +1,4 @@
+
 // AUTO-GENERATED FILE. DO NOT MODIFY.
 
 // This file is an auto-generated file by Ballerina persistence layer for model.
@@ -710,4 +711,5 @@ public isolated client class Client {
         return result;
     }
 }
+
 

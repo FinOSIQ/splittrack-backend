@@ -58,6 +58,20 @@ dependencies = [
 
 [[package]]
 org = "ballerina"
+name = "email"
+version = "2.11.0"
+dependencies = [
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "log"},
+	{org = "ballerina", name = "mime"},
+	{org = "ballerina", name = "task"}
+]
+modules = [
+	{org = "ballerina", packageName = "email", moduleName = "email"}
+]
+
+[[package]]
+org = "ballerina"
 name = "file"
 version = "1.11.0"
 dependencies = [
@@ -350,6 +364,20 @@ dependencies = [
 ]
 
 [[package]]
+org = "ballerina"
+name = "uuid"
+version = "1.9.0"
+dependencies = [
+	{org = "ballerina", name = "crypto"},
+	{org = "ballerina", name = "jballerina.java"},
+	{org = "ballerina", name = "lang.int"},
+	{org = "ballerina", name = "time"}
+]
+modules = [
+	{org = "ballerina", packageName = "uuid", moduleName = "uuid"}
+]
+
+[[package]]
 org = "ballerinai"
 name = "observe"
 version = "0.0.0"
@@ -404,6 +432,7 @@ org = "sonalattanayake"
 name = "splittrack_backend"
 version = "0.1.0"
 dependencies = [
+	{org = "ballerina", name = "email"},
 	{org = "ballerina", name = "http"},
 	{org = "ballerina", name = "io"},
 	{org = "ballerina", name = "jballerina.java"},
@@ -412,6 +441,7 @@ dependencies = [
 	{org = "ballerina", name = "regex"},
 	{org = "ballerina", name = "sql"},
 	{org = "ballerina", name = "test"},
+	{org = "ballerina", name = "uuid"},
 	{org = "ballerinai", name = "observe"},
 	{org = "ballerinax", name = "mysql"},
 	{org = "ballerinax", name = "mysql.driver"},
@@ -421,7 +451,13 @@ modules = [
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.db_scripts"},
-	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.search"},
+  {org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.email"},
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.interceptor"},
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.users"},
+	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.utils"},
+  {org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.search"},
 	{org = "sonalattanayake", packageName = "splittrack_backend", moduleName = "splittrack_backend.users"}
+
+
 ]
 
