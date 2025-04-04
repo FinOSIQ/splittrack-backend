@@ -1,8 +1,11 @@
 import splittrack_backend.db as db;
+import splittrack_backend.utils;
+
 import ballerina/http;
+import ballerina/persist;
 import ballerina/uuid;
+
 // import ballerina/io;
-import ballerina/log;
 // import ballerina/sql;
 
 type GroupResponse record {|
@@ -14,7 +17,9 @@ final db:Client dbClient = check new ();
 
 // HTTP Service for Group CRUD Operations
 public function getGroupService() returns http:Service {
+
     return service object {
+
         // CREATE: Add a new group with optional initial members
         resource function post groups(http:Caller caller, http:Request req) returns error? {
 
@@ -22,21 +27,13 @@ public function getGroupService() returns http:Service {
 
             json|error nameJson = payload.name;
             if nameJson is error || nameJson is () {
-                http:Response res = new;
-                res.statusCode = http:STATUS_BAD_REQUEST;
-                res.setPayload({"error": "Missing or invalid 'name' field"});
-                check caller->respond(res);
-                return;
+                return utils:sendErrorResponse(caller, http:STATUS_BAD_REQUEST, "Missing 'name' field");
             }
             string name = nameJson.toString();
 
             json?|error members = payload.members is json ? payload.members : ();
-            if members is error {
-                http:Response res = new;
-                res.statusCode = http:STATUS_BAD_REQUEST;
-                res.setPayload({"error": "Invalid 'members' field"});
-                check caller->respond(res);
-                return;
+            if members is error || !(members is json[]) {
+                return utils:sendErrorResponse(caller, http:STATUS_BAD_REQUEST, "Invalid 'members' field", "Expected an array of members");
             }
 
             // Insert group
@@ -47,38 +44,29 @@ public function getGroupService() returns http:Service {
 
                 // Insert members if provided
                 db:UserGroupMemberInsert[] memberResults = [];
-                if members is json[] {
-                    foreach json member in members {
-                        json|error userIdJson = member.userId;
-                        json|error roleJson = member.role;
 
-                        if userIdJson is error || userIdJson is () {
-                            http:Response res = new;
-                            res.statusCode = http:STATUS_BAD_REQUEST;
-                            res.setPayload({"error": "Missing or invalid 'userId' in member"});
-                            check caller->respond(res);
-                            fail error("Invalid userId"); 
-                            
-                        }
-                        if roleJson is error || roleJson is () {
-                            http:Response res = new;
-                            res.statusCode = http:STATUS_BAD_REQUEST;
-                            res.setPayload({"error": "Missing or invalid 'role' in member"});
-                            check caller->respond(res);
-                            fail error("Invalid role");
-                        }
+                foreach json member in members {
+                    json|error userIdJson = member.userId;
+                    json|error roleJson = member.role;
 
-                        string userId = userIdJson.toString();
-                        string role = roleJson.toString();
-                        string groupMemberId = uuid:createType4AsString();
+                    if userIdJson is error || userIdJson is () {
+                        fail error("Missing or invalid 'userId' in member", statusCode = http:STATUS_BAD_REQUEST);
 
-                        memberResults.push({
-                            group_member_Id: groupMemberId, 
-                            userUser_Id: userId,
-                            member_role: role,
-                            groupGroup_Id: group_Id 
-                        });
                     }
+                    if roleJson is error || roleJson is () {
+                        fail error("Missing or invalid 'role' in member", statusCode = http:STATUS_BAD_REQUEST);
+                    }
+
+                    string userId = userIdJson.toString();
+                    string role = roleJson.toString();
+                    string groupMemberId = uuid:createType4AsString();
+
+                    memberResults.push({
+                        group_member_Id: groupMemberId,
+                        userUser_Id: userId,
+                        member_role: role,
+                        groupGroup_Id: group_Id
+                    });
                 }
 
                 if memberResults.length() > 0 {
@@ -86,27 +74,48 @@ public function getGroupService() returns http:Service {
                 }
                 check commit;
 
-
             } on fail error e {
                 // Transaction failed (rolled back automatically)
-                http:Response res = new;
-                res.statusCode = http:STATUS_INTERNAL_SERVER_ERROR; // 500 for DB errors
-                res.setPayload({"error": "Failed to create group or members", "details": e.message()});
-                check caller->respond(res);
-                return;
+                int statusCode;
+                map<anydata> details = <map<anydata>>e.detail();
+                if details.hasKey("statusCode") {
+                    statusCode = check details.get("statusCode").ensureType(int);
+                } else {
+                    statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
+                }
+
+                return utils:sendErrorResponse(caller, statusCode, "Failed to create group", e.message());
+
             }
 
             http:Response res = new;
             res.statusCode = http:STATUS_CREATED; // 201
+            res.setJsonPayload(group);
             check caller->respond(res);
 
         }
 
         // READ: Get group details and its members
-        // resource function get groups/[int groupId](http:Caller caller, http:Request req) returns error? {
-        //     GroupResponse response = fetchGroupDetails(groupId);
-        //     check caller->respond(response.toJson());
-        // }
+        resource function get groups/[string groupId](http:Caller caller, http:Request req) returns error? {
+
+            db:UserGroupWithRelations|error groupDetails = dbClient->/usergroups/[groupId]();
+            if groupDetails is error {
+                // Check if the error is a "not found" error
+                if groupDetails is persist:NotFoundError {
+                    return utils:sendErrorResponse(caller, http:STATUS_NOT_FOUND, "Group not found", "Group with ID " + groupId + " does not exist");
+                }
+                // Other database errors
+                return utils:sendErrorResponse(caller, http:STATUS_INTERNAL_SERVER_ERROR, groupDetails.toString());
+            }
+            http:Response res = new;
+            json payload = {
+                "group": groupDetails
+            };
+            res.setJsonPayload(payload);
+            res.statusCode = http:STATUS_OK;
+            return caller->respond(res);
+
+        }
 
         // // READ: Get all groups (optional filtering by name)
         // resource function get groups(http:Caller caller, http:Request req) returns error? {
@@ -176,18 +185,3 @@ public function getGroupService() returns http:Service {
     };
 }
 
-
-
-// Reuse your stream-to-JSON converter
-function convertStreamToJson(stream<record {}, error?> scanRecords) returns json {
-    json[] output = [];
-    error? e = scanRecords.forEach(function(record {} scanRecord) {
-        output.push(scanRecord.toJson());
-    });
-
-    if e is error {
-        log:printError("Stream processing failed", 'error = e);
-        return {"error": e.message()};
-    }
-    return output;
-}
