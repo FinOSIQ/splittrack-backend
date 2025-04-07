@@ -2,10 +2,14 @@ import splittrack_backend.db as db;
 import splittrack_backend.utils;
 
 import ballerina/http;
+import ballerina/io;
+// import ballerina/io;
+
 import ballerina/persist;
+import ballerina/sql;
 import ballerina/uuid;
 
-// import ballerina/io;
+// import ballerina/io; 
 // import ballerina/sql;
 
 type GroupResponse record {|
@@ -45,6 +49,7 @@ public function getGroupService() returns http:Service {
                 // Insert members if provided
                 db:UserGroupMemberInsert[] memberResults = [];
 
+                boolean hasCreator = false;
                 foreach json member in members {
                     json|error userIdJson = member.userId;
                     json|error roleJson = member.role;
@@ -61,6 +66,17 @@ public function getGroupService() returns http:Service {
                     string role = roleJson.toString();
                     string groupMemberId = uuid:createType4AsString();
 
+                    if role != "creator" && role != "member" {
+                        fail error("Role must be 'creator' or 'member', got '" + role + "'", statusCode = http:STATUS_BAD_REQUEST);
+                    }
+
+                    if role == "creator" {
+                        if hasCreator {
+                            fail error("Multiple 'creator' roles are not allowed", statusCode = http:STATUS_BAD_REQUEST);
+                        }
+                        hasCreator = true;
+                    }
+
                     memberResults.push({
                         group_member_Id: groupMemberId,
                         userUser_Id: userId,
@@ -76,15 +92,10 @@ public function getGroupService() returns http:Service {
 
             } on fail error e {
                 // Transaction failed (rolled back automatically)
-                int statusCode;
-                map<anydata> details = <map<anydata>>e.detail();
-                if details.hasKey("statusCode") {
-                    statusCode = check details.get("statusCode").ensureType(int);
-                } else {
-                    statusCode = http:STATUS_INTERNAL_SERVER_ERROR;
-                }
-
-                return utils:sendErrorResponse(caller, statusCode, "Failed to create group", e.message());
+                int statusCode = e.detail().hasKey("statusCode")
+                    ? check e.detail().get("statusCode").ensureType(int)
+                    : http:STATUS_INTERNAL_SERVER_ERROR;
+                return utils:sendErrorResponse(caller, statusCode, "Failed to update group", e.message());
 
             }
 
@@ -102,7 +113,8 @@ public function getGroupService() returns http:Service {
             if groupDetails is error {
                 // Check if the error is a "not found" error
                 if groupDetails is persist:NotFoundError {
-                    return utils:sendErrorResponse(caller, http:STATUS_NOT_FOUND, "Group not found", "Group with ID " + groupId + " does not exist");
+                    _ = check utils:sendErrorResponse(caller, http:STATUS_NOT_FOUND, "Group not found", "Group with ID " + groupId + " does not exist");
+                    return;
                 }
                 // Other database errors
                 return utils:sendErrorResponse(caller, http:STATUS_INTERNAL_SERVER_ERROR, groupDetails.toString());
@@ -117,71 +129,142 @@ public function getGroupService() returns http:Service {
 
         }
 
-        // // READ: Get all groups (optional filtering by name)
-        // resource function get groups(http:Caller caller, http:Request req) returns error? {
-        //     map<string[]> queryParams = req.getQueryParams();
-        //     string? nameFilter = queryParams.hasKey("name") ? queryParams.get("name")[0] : ();
+        resource function put groups/[string groupId](http:Caller caller, http:Request req) returns error?|http:Response {
+            json payload = check req.getJsonPayload();
 
-        //     sql:ParameterizedQuery query = nameFilter is string
-        //         ? `SELECT group_Id, name FROM usergroup WHERE name LIKE ${"%" + nameFilter + "%"}`
-        //         : `SELECT group_Id, name FROM usergroup`;
-        //     stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
-        //     json groups = check convertStreamToJson(resultStream);
-        //     check caller->respond({"groups": groups});
-        // }
+            // Validate and extract name (optional)
+            json|error nameJson = payload.name;
+            string? name = ();
+            if nameJson is error || nameJson is () {
+                return utils:sendErrorResponse(caller, http:STATUS_BAD_REQUEST, "Invalid or missing 'name' field");
+            }
+            name = nameJson.toString();
 
-        // // UPDATE: Modify group name and/or members
-        // resource function put groups/[int groupId](http:Caller caller, http:Request req) returns error? {
-        //     json payload = check req.getJsonPayload();
-        //     string? name = payload.name is string ? payload.name.toString() : ();
-        //     json[]? members = payload.members is json[] ? payload.members : ();
+            // Validate and extract members (optional)
+            json?|error membersJson = payload.members;
+            json[]? members = ();
+            if membersJson is error || (membersJson !is () && membersJson !is json[]) {
+                return utils:sendErrorResponse(caller, http:STATUS_BAD_REQUEST, "Invalid 'members' field", "Expected an array of members");
+            } else if membersJson is json[] {
+                members = membersJson;
+            }
 
-        //     // Update group name if provided
-        //     if name is string {
-        //         sql:ParameterizedQuery updateQuery = `UPDATE usergroup SET name = ${name} WHERE group_Id = ${groupId}`;
-        //         _ = check db_scripts:dbClient->execute(updateQuery);
-        //     }
+            // Check if group exists
+            db:UserGroupWithRelations|error groupCheck = dbClient->/usergroups/[groupId]();
+            if groupCheck is error {
+                if groupCheck is persist:NotFoundError {
+                    return utils:sendErrorResponse(caller, http:STATUS_NOT_FOUND, "Group not found", "Group with ID " + groupId + " does not exist");
+                }
+                return utils:sendErrorResponse(caller, http:STATUS_INTERNAL_SERVER_ERROR, groupCheck.toString());
+            }
 
-        //     // Update members if provided (delete existing, insert new)
-        //     if members is json[] {
-        //         sql:ParameterizedQuery deleteQuery = `DELETE FROM usergroupmember WHERE group_Id = ${groupId}`;
-        //         _ = check db_scripts:dbClient->execute(deleteQuery);
+            transaction {
+                // Update group name if provided
+                if name is string {
+                    db:UserGroupUpdate groupUpdate = {name: name};
+                    _ = check dbClient->/usergroups/[groupId].put(groupUpdate);
+                }
 
-        //         json[] memberResults = [];
-        //         foreach json member in members {
-        //             string userId = check member.userId.toString();
-        //             string role = check member.role.toString();
-        //             sql:ParameterizedQuery insertQuery = `INSERT INTO usergroupmember (group_Id, user_Id, member_role) 
-        //                                                  VALUES (${groupId}, ${userId}, ${role})`;
-        //             _ = check db_scripts:dbClient->execute(insertQuery);
-        //             memberResults.push({"userId": userId, "role": role});
-        //         }
-        //         check caller->respond({"group": {"group_Id": groupId, "name": name ?: fetchGroupName(groupId)}, "members": memberResults});
-        //     } else {
-        //         check caller->respond({"group": {"group_Id": groupId, "name": name ?: fetchGroupName(groupId)}});
-        //     }
-        // }
+                // Update members using delete and replace if provided
+                if members is json[] {
+
+                    // Delete all existing members
+
+                    // io:println("Deleting all members for groupId: ", groupId);
+                    sql:ParameterizedQuery deleteMembersQuery = `DELETE FROM usergroupmember WHERE groupGroup_Id = ${groupId} AND member_role != 'creator'`;
+                    io:println("Delete members query: ", deleteMembersQuery);
+                    sql:ExecutionResult deleteResult = check dbClient->executeNativeSQL(deleteMembersQuery);
+                    io:println("Deleted rows: ", deleteResult.affectedRowCount);
+
+                    // Insert new members
+                    db:UserGroupMemberInsert[] toInsert = [];
+                    foreach json member in members {
+                        json|error userIdJson = member.userId;
+                        json|error roleJson = member.role;
+
+                        if userIdJson is error || userIdJson is () {
+                            fail error("Missing or invalid 'userId' in member", statusCode = http:STATUS_BAD_REQUEST);
+                        }
+                        if roleJson is error || roleJson is () {
+                            fail error("Missing or invalid 'role' in member", statusCode = http:STATUS_BAD_REQUEST);
+                        }
+
+                        string userId = userIdJson.toString();
+                        string role = roleJson.toString();
+                        string groupMemberId = uuid:createType4AsString();
+
+                        if role === "creator" {
+                            fail error("Cannot alter creator role", statusCode = http:STATUS_BAD_REQUEST);
+                        }
+
+                        if role != "member" {
+                            fail error("Role must be 'member', got '" + role + "'", statusCode = http:STATUS_BAD_REQUEST);
+                        }
+
+                        toInsert.push({
+                            group_member_Id: groupMemberId,
+                            userUser_Id: userId,
+                            member_role: role,
+                            groupGroup_Id: groupId
+                        });
+                    }
+
+                    if toInsert.length() > 0 {
+                        _ = check dbClient->/usergroupmembers.post(toInsert);
+                    }
+                }
+
+                check commit;
+            } on fail error e {
+                int statusCode = e.detail().hasKey("statusCode")
+                    ? check e.detail().get("statusCode").ensureType(int)
+                    : http:STATUS_INTERNAL_SERVER_ERROR;
+                return utils:sendErrorResponse(caller, statusCode, "Failed to update group", e.message());
+            }
+
+            // Fetch updated group details for response
+            db:UserGroupWithRelations|error updatedGroup = dbClient->/usergroups/[groupId]();
+            if updatedGroup is error {
+                return utils:sendErrorResponse(caller, http:STATUS_INTERNAL_SERVER_ERROR, updatedGroup.toString());
+            }
+
+            http:Response res = new;
+            res.statusCode = http:STATUS_OK; // 200
+            res.setJsonPayload({"group": updatedGroup});
+            return res;
+        }
 
         // // DELETE: Remove a group and its members
-        // resource function delete groups/[int groupId](http:Caller caller, http:Request req) returns error? {
-        //     // Delete members first (due to foreign key constraints)
-        //     sql:ParameterizedQuery deleteMembersQuery = `DELETE FROM usergroupmember WHERE group_Id = ${groupId}`;
-        //     _ = check db_scripts:dbClient->execute(deleteMembersQuery);
+        resource function delete groups/[string groupId](http:Caller caller, http:Request req) returns error? {
+            transaction {
+                // Delete members first (due to foreign key constraints)
+            sql:ParameterizedQuery deleteMembersQuery = `DELETE FROM usergroupmember WHERE groupGroup_Id = ${groupId}`;
+            _ = check dbClient->executeNativeSQL(deleteMembersQuery);
 
-        //     // Delete group
-        //     sql:ParameterizedQuery deleteGroupQuery = `DELETE FROM usergroup WHERE group_Id = ${groupId}`;
-        //     sql:ExecutionResult result = check db_scripts:dbClient->execute(deleteGroupQuery);
+            // Delete group
 
-        //     if result.affectedRowCount == 0 {
-        //         http:Response res = new;
-        //         res.statusCode = http:STATUS_NOT_FOUND;
-        //         res.setPayload({"error": "Group not found"});
-        //         check caller->respond(res);
-        //         return;
-        //     }
+            // TODO: doesn't work with maria DB - discus standard alterative
+            db:UserGroup|persist:Error deleteResult = dbClient->/usergroups/[groupId].delete();
+            
+            if deleteResult is persist:NotFoundError {
+                fail error("Group with ID " + groupId + " does not exist", statusCode = http:STATUS_NOT_FOUND);
+            } else if deleteResult is persist:Error {
+               fail error(deleteResult.message(), statusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+            }
 
-        //     check caller->respond({"message": "Group deleted successfully"});
-        // }
+            http:Response res = new;
+            res.statusCode = http:STATUS_OK; // 200 OK
+            res.setJsonPayload({"status": "success", "groupId": groupId});
+            check caller->respond(res);
+            check commit;
+            } on fail error e {
+                // Transaction failed (rolled back automatically)
+                int statusCode = e.detail().hasKey("statusCode")
+                    ? check e.detail().get("statusCode").ensureType(int)
+                    : http:STATUS_INTERNAL_SERVER_ERROR;
+                return utils:sendErrorResponse(caller, statusCode, "Failed to delete group", e.message());
+            }
+        }
     };
 }
 
