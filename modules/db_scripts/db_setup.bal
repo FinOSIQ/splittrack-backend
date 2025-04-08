@@ -45,17 +45,18 @@ FOREIGN KEY(userUser_Id) REFERENCES User(user_Id),
 PRIMARY KEY(group_member_Id)
 )`;
 sql:ParameterizedQuery query6 = `CREATE TABLE IF NOT EXISTS FriendRequest (
-friendRequest_Id VARCHAR(191) NOT NULL,
+friendReq_ID VARCHAR(191) NOT NULL,
 receive_user_Id INT NOT NULL,
 status VARCHAR(191) NOT NULL,
 send_user_idUser_Id VARCHAR(191) NOT NULL,
 FOREIGN KEY(send_user_idUser_Id) REFERENCES User(user_Id),
-PRIMARY KEY(friendRequest_Id)
+PRIMARY KEY(friendReq_ID)
 )`;
 sql:ParameterizedQuery query7 = `CREATE TABLE IF NOT EXISTS Expense (
 expense_Id VARCHAR(191) NOT NULL,
 name VARCHAR(191) NOT NULL,
-total_amount DECIMAL(65,30) NOT NULL,
+expense_total_amount DECIMAL(65,30) NOT NULL,
+expense_actual_amount DECIMAL(65,30) NOT NULL,
 usergroupGroup_Id VARCHAR(191) NOT NULL,
 FOREIGN KEY(usergroupGroup_Id) REFERENCES UserGroup(group_Id),
 PRIMARY KEY(expense_Id)

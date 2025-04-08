@@ -17,7 +17,7 @@ public type User record {|
 |};
 
 public type FriendRequest record {|
-    readonly string friendRequest_Id;
+    readonly string friendReq_ID;
     User send_user_Id;
     int receive_user_Id;
     string status;
@@ -46,7 +46,8 @@ public type UserGroupMember record {|
 public type Expense record {|
     readonly string expense_Id;
     string name;
-    decimal total_amount;
+    decimal expense_total_amount;
+    decimal expense_actual_amount;
     ExpenseParticipant[] expenseParticipants;
     Transaction[] transactions;
 	UserGroup usergroup;
