@@ -2,9 +2,17 @@
 
 import ballerina/http;
 import ballerina/io;
-import ballerina/log;
 import ballerina/sql;
-import splittrack_backend.db_scripts;
+import ballerinax/mysql;
+import splittrack_backend.utils;
+
+public final mysql:Client Client = check new (
+    host = "localhost",
+    user = "root",
+    password = "",
+    port = 3306,
+    database = "splittrack"
+);
 
 type SearchResponse record {
     json|error users?;
@@ -70,12 +78,12 @@ function searchDatabase(string value, string[] types, string? userId) returns Se
 
 // Function to search users
 function searchUsers(string value) returns json|error {
-    sql:ParameterizedQuery query = `SELECT user_id, name, email 
+    sql:ParameterizedQuery query = `SELECT user_id, first_name, email 
                                     FROM user 
-                                    WHERE name LIKE ${"%" + value + "%"} 
+                                    WHERE first_name LIKE ${"%" + value + "%"} 
                                        OR email LIKE ${"%" + value + "%"}`;
-    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
-    return convertStreamToJson(resultStream);
+    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    return  check utils:streamToJson(resultStream);
 }
 
 // Function to search friends
@@ -86,7 +94,7 @@ function searchFriends(string? userId, string value) returns json|error {
     }
 
     string searchTerm = "%" + value + "%";
-    sql:ParameterizedQuery query = `SELECT u.user_id, u.name, u.email
+    sql:ParameterizedQuery query = `SELECT u.user_id, u.first_name, u.email
                                     FROM friend f
                                     JOIN user u ON u.user_id = 
                                         CASE 
@@ -94,10 +102,10 @@ function searchFriends(string? userId, string value) returns json|error {
                                             WHEN f.user_id_2User_Id = ${userId} THEN f.user_id_1User_Id
                                         END
                                     WHERE (f.user_id_1User_Id = ${userId} OR f.user_id_2User_Id = ${userId})
-                                    AND u.name LIKE ${searchTerm}`;
+                                    AND u.first_name LIKE ${searchTerm}`;
     
-    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
-    return convertStreamToJson(resultStream);
+    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    return  check utils:streamToJson(resultStream);
 }
 
 // Fixed function for searching groups
@@ -105,21 +113,9 @@ function searchGroups(string value) returns json|error {
     string searchTerm = "%" + value + "%";
     sql:ParameterizedQuery query = `SELECT group_id, name FROM usergroup 
                                     WHERE name LIKE ${searchTerm}`;
-    stream<record {}, error?> resultStream = db_scripts:dbClient->query(query);
-    return convertStreamToJson(resultStream);
+    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    return  check utils:streamToJson(resultStream);
 }
 
-// Helper function to convert stream result to JSON
-function convertStreamToJson(stream<record {}, error?> scanRecords) returns json {
-    json[] output = [];
-    error? e = scanRecords.forEach(function(record {} scanRecord) {
-        output.push(scanRecord.toJson());
-    });
 
-    if e is error {
-        log:printError("Stream processing failed", 'error = e);
-        return {"error": e.message()};
-    }
-    return output;
-}
 
