@@ -46,7 +46,8 @@ public type UserGroupMember record {|
 public type Expense record {|
     readonly string expense_Id;
     string name;
-    decimal total_amount;
+    decimal expense_total_amount;
+    decimal expense_actual_amount;
     ExpenseParticipant[] expenseParticipants;
     Transaction[] transactions;
 	UserGroup usergroup;

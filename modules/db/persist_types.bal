@@ -161,7 +161,8 @@ public type UserGroupMemberUpdate record {|
 public type Expense record {|
     readonly string expense_Id;
     string name;
-    decimal total_amount;
+    decimal expense_total_amount;
+    decimal expense_actual_amount;
 
     string usergroupGroup_Id;
 |};
@@ -169,7 +170,8 @@ public type Expense record {|
 public type ExpenseOptionalized record {|
     string expense_Id?;
     string name?;
-    decimal total_amount?;
+    decimal expense_total_amount?;
+    decimal expense_actual_amount?;
     string usergroupGroup_Id?;
 |};
 
@@ -186,7 +188,8 @@ public type ExpenseInsert Expense;
 
 public type ExpenseUpdate record {|
     string name?;
-    decimal total_amount?;
+    decimal expense_total_amount?;
+    decimal expense_actual_amount?;
     string usergroupGroup_Id?;
 |};
 

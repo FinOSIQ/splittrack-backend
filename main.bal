@@ -4,7 +4,7 @@
 import splittrack_backend.db_scripts as generator;
 import splittrack_backend.db_scripts as db_setup;
 import splittrack_backend.users;
-
+import splittrack_backend.expense;
 import ballerina/http;
 import ballerina/io;
 
@@ -15,7 +15,8 @@ public function main() returns error? {
 
     check executeSqlScript();
 
-    check httpListener.attach(users:getUserService(), "api/v1");
+    check httpListener.attach(users:getUserService(), "api_user/v1");
+    check httpListener.attach(expense:getExpenseService(), "api_expense/v1");
 
     check httpListener.start();
 }
@@ -33,6 +34,8 @@ function executeSqlScript() returns error? {
     if execResult is error {
         io:println("Error executing SQL queries: ", execResult.message());
         return execResult;
+    }else{
+        io:println("SQL queries executed successfully");
     }
 
     io:println("Database setup completed successfully");

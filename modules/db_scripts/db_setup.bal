@@ -55,7 +55,8 @@ PRIMARY KEY(friend_Id)
 sql:ParameterizedQuery query7 = `CREATE TABLE IF NOT EXISTS Expense (
 expense_Id VARCHAR(191) NOT NULL,
 name VARCHAR(191) NOT NULL,
-total_amount DECIMAL(65,30) NOT NULL,
+expense_total_amount DECIMAL(65,30) NOT NULL,
+expense_actual_amount DECIMAL(65,30) NOT NULL,
 usergroupGroup_Id VARCHAR(191) NOT NULL,
 FOREIGN KEY(usergroupGroup_Id) REFERENCES UserGroup(group_Id),
 PRIMARY KEY(expense_Id)
