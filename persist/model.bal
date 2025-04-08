@@ -17,7 +17,7 @@ public type User record {|
 |};
 
 public type FriendRequest record {|
-    readonly string friend_Id;
+    readonly string friendRequest_Id;
     User send_user_Id;
     int receive_user_Id;
     string status;
