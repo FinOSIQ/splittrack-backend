@@ -43,7 +43,7 @@ INSERT INTO Friend (friend_Id, user_id_1User_Id, user_id_2User_Id)
 VALUES ('fe07bc52', '711ca4dc', '65d0ed7b');
 
 -- Friend Requests
-INSERT INTO FriendRequest (friendRequest_Id, send_user_idUser_Id, receive_user_Id, status)
+INSERT INTO FriendRequest (friendReq_ID, send_user_idUser_Id, receive_user_Id, status)
 VALUES ('19ddeeb0', '600fc673', '711ca4dc', 'pending');
 
 -- Group Members

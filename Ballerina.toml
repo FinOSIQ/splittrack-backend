@@ -14,4 +14,8 @@ observabilityIncluded = true
 name = "Module.interceptor"
 path = "Module.interceptor"
 
+[[platform.java21.dependency]]
+groupId = "io.ballerina.stdlib"
+artifactId = "persist.sql-native"
+version = "1.6.0"
 

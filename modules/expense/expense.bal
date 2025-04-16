@@ -1,5 +1,7 @@
 import splittrack_backend.db;
 import splittrack_backend.interceptor as authInterceptor;
+import splittrack_backend.utils;
+
 
 import ballerina/http;
 import ballerina/log;
@@ -134,6 +136,40 @@ public function getExpenseService() returns http:Service {
             });
             check caller->respond(response);
             return;
+        }
+
+        resource function delete expenses/[string expenseId](http:Caller caller, http:Request req) returns error? {
+            http:Response response = new;
+
+            // boolean|error isValid = authInterceptor:authenticate(req);
+            // if isValid is error || !isValid {
+            //     response.statusCode = 401;
+            //     response.setJsonPayload({"status": "error", "message": "Unauthorized: Invalid or expired token"});
+            //     check caller->respond(response);
+            //     return;
+            // }
+
+            transaction {
+                // Directly delete expense
+                db:Expense|persist:Error deleteResult = dbClient->/expenses/[expenseId].delete();
+
+                if deleteResult is persist:NotFoundError {
+                    fail error("Expense with ID " + expenseId + " does not exist", statusCode = http:STATUS_NOT_FOUND);
+                } else if deleteResult is persist:Error {
+                    fail error(deleteResult.message(), statusCode = http:STATUS_INTERNAL_SERVER_ERROR);
+                }
+
+                response.statusCode = http:STATUS_OK;
+                response.setJsonPayload({"status": "success", "expenseId": expenseId});
+                check caller->respond(response);
+                check commit;
+            } on fail error e {
+                // Transaction failed (rolled back automatically)
+                int statusCode = e.detail().hasKey("statusCode")
+                    ? check e.detail().get("statusCode").ensureType(int)
+                    : http:STATUS_INTERNAL_SERVER_ERROR;
+                return utils:sendErrorResponse(caller, statusCode, "Failed to delete expense", e.message());
+            }
         }
 
         resource function get groupExpenses(http:Caller caller, http:Request req, @http:Header string authorization, @http:Query string userId, @http:Payload UserIdPayload payload) returns http:Ok & readonly|error? {
