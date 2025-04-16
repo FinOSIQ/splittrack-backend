@@ -6,21 +6,16 @@ import ballerina/log;
 import ballerina/persist;
 import ballerina/sql;
 import ballerina/uuid;
-import ballerinax/mysql;
+
+import splittrack_backend.utils;
 
 
 
 
 final db:Client dbClient = check new ();
 
-// Initialize the SQL client
-final sql:Client sqlClient = check new mysql:Client(
-    host = "localhost",
-    user = "root",
-    password = "",
-    database = "splittrack",
-    port = 3306
-);
+
+
 
 public function hello(string? name) returns string {
     if name !is () {
@@ -511,7 +506,7 @@ public function getExpenseService() returns http:Service {
                     string expense_Id;
                     string name;
                     string? usergroupGroup_Id;
-                |}, sql:Error?> expenseStream = sqlClient->query(expenseQuery);
+                |}, sql:Error?> expenseStream = utils:Client->query(expenseQuery);
 
                 // Process the stream result
                 var result = check expenseStream.next();
@@ -640,7 +635,7 @@ public function getExpenseService() returns http:Service {
 
             // Fetch user's name
             sql:ParameterizedQuery userQuery = `SELECT first_name, last_name FROM User WHERE user_Id = ${userId}`;
-            stream<record {|string first_name; string last_name;|}, sql:Error?> userStream = sqlClient->query(userQuery);
+            stream<record {|string first_name; string last_name;|}, sql:Error?> userStream = utils:Client->query(userQuery);
             record {|string first_name; string last_name;|}? userRecord = ();
             error? uErr = from var u in userStream
                 do {
@@ -663,7 +658,7 @@ public function getExpenseService() returns http:Service {
 
             // Fetch all expenses where the user is a participant
             sql:ParameterizedQuery participantQuery = `SELECT expenseExpense_Id FROM ExpenseParticipant WHERE userUser_Id = ${userId}`;
-            stream<record {|string expenseExpense_Id;|}, sql:Error?> participantStream = sqlClient->query(participantQuery);
+            stream<record {|string expenseExpense_Id;|}, sql:Error?> participantStream = utils:Client->query(participantQuery);
 
             string[] expenseIds = [];
             error? e = from var p in participantStream
@@ -698,7 +693,7 @@ public function getExpenseService() returns http:Service {
                     string userUser_Id;
                     string participant_role;
                     decimal owning_amount;
-                |}, sql:Error?> allParticipantsStream = sqlClient->query(allParticipantsQuery);
+                |}, sql:Error?> allParticipantsStream = utils:Client->query(allParticipantsQuery);
 
                 record {|
                     string userUser_Id;

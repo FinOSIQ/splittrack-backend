@@ -3,16 +3,19 @@
 import ballerina/http;
 import ballerina/io;
 import ballerina/sql;
-import ballerinax/mysql;
 import splittrack_backend.utils;
 
-public final mysql:Client Client = check new (
-    host = "localhost",
-    user = "root",
-    password = "",
-    port = 3306,
-    database = "splittrack"
-);
+
+
+
+
+// public final mysql:Client Client = check new (
+//     host = "localhost",
+//     user = "root",
+//     password = "",
+//     port = 3306,
+//     database = "splittrack"
+// );
 
 type SearchResponse record {
     json|error users?;
@@ -82,7 +85,7 @@ function searchUsers(string value) returns json|error {
                                     FROM user 
                                     WHERE first_name LIKE ${"%" + value + "%"} 
                                        OR email LIKE ${"%" + value + "%"}`;
-    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    stream<utils:JsonRecord, error?> resultStream = utils:Client->query(query);
     return  check utils:streamToJson(resultStream);
 }
 
@@ -104,7 +107,7 @@ function searchFriends(string? userId, string value) returns json|error {
                                     WHERE (f.user_id_1User_Id = ${userId} OR f.user_id_2User_Id = ${userId})
                                     AND u.first_name LIKE ${searchTerm}`;
     
-    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    stream<utils:JsonRecord, error?> resultStream = utils:Client->query(query);
     return  check utils:streamToJson(resultStream);
 }
 
@@ -113,7 +116,7 @@ function searchGroups(string value) returns json|error {
     string searchTerm = "%" + value + "%";
     sql:ParameterizedQuery query = `SELECT group_id, name FROM usergroup 
                                     WHERE name LIKE ${searchTerm}`;
-    stream<utils:JsonRecord, error?> resultStream = Client->query(query);
+    stream<utils:JsonRecord, error?> resultStream = utils:Client->query(query);
     return  check utils:streamToJson(resultStream);
 }
 

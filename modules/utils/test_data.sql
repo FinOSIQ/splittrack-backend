@@ -2,7 +2,7 @@
 
 -- This script is used to populate the database with test data.
 -- It should be run after the database schema has been created.
--- Get-Content modules\db\test_data.sql | & "C:\xampp\mysql\bin\mysql.exe" -u root -D splittrack
+-- Get-Content modules\utils\test_data.sql | & "C:\xampp\mysql\bin\mysql.exe" -u root -D splittrack
 
 -- Users
 INSERT INTO User (user_Id, email, first_name, last_name, phone_number, birthdate, currency_pref)
